@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSave": true,
+    "eslint.enable": true,
+    "eslint.validate": ["javascript"],
+    "eslint.workingDirectories": [
+        "./src"
+    ]
+}

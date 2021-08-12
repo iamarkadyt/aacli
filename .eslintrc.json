@@ -1,0 +1,35 @@
+{
+    "extends": [
+        "airbnb",
+        "eslint-config-prettier",
+        "plugin:node/recommended"
+    ],
+    "plugins": [
+        "eslint-plugin-prettier"
+    ],
+    "env": {
+        "commonjs": true,
+        "es2021": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "import/prefer-default-export": "off",
+        "prettier/prettier": "error",
+        "no-console": "off",
+        "no-empty": "off",
+        "no-process-exit": "off",
+        "no-await-in-loop": "off",
+        "object-shorthand": "error",
+        "prefer-destructuring": [
+            "error",
+            {
+                "object": true,
+                "array": false
+            }
+        ],
+        "no-unused-vars": "warn"
+    }
+}
