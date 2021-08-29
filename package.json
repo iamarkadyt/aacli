@@ -1,6 +1,6 @@
 {
-    "name": "dcli",
-    "version": "1.2.0",
+    "name": "aacli",
+    "version": "2.0.0",
     "description": "AWS authentication CLI",
     "scripts": {
         "start": "node bin/cli.js"

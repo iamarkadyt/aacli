@@ -46,7 +46,7 @@ function main() {
         .demandCommand(1)
         .strictCommands(true)
         .wrap(120)
-        .epilog('Author: @iamarkadyt')
+        .epilog(`Documentation: https://github.com/iamarkadyt/${CLI_NAME}`)
 
     return argv
 }
