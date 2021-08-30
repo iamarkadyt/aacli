@@ -74,19 +74,20 @@ Below is a more detailed description of this AWS authentication flow. Actual IAM
 
 # Example IAM policies
 
+Below is an example setup that follows the principles outlined above. We look at what IAM groups, IAM users, IAM policies and roles we need to create in HUB and downstream environment accounts to implement this pattern.
+
+Our organization setup is HUB account + dev, stage and prod AWS accounts. And we have 4 developers on the team: Bob, Harry, Alice and Tom.
+
 #### HUB account setup
-In our example we create 3 IAM groups: 
+Create 3 IAM groups: 
 
 - `DEV_ACCESS_FOR_DEVELOPERS`,
 - `STAGE_ACCESS_FOR_DEVELOPERS` and
 - `PROD_ACCESS_FOR_DEVELOPERS`.
 
-We also create 4 IAM users for our developers: `bob`, `harry`, `alice`, `tom`.
+Then create 4 IAM users for our developers: Bob, Harry, Alice, Tom.
 
-- Users `bob` and `tom` are only allowed to access `dev` environment so the only only IAM group membership they have is `DEV_ACCESS_FOR_DEVELOPERS`.
-- Users `harry` and `alice` are senior developers so they have access to all environments and have membership in all 3 IAM groups.
-
-IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allows assuming `DEVELOPER` IAM role in `dev` account (which has ID of `111111111111` in this example).
+IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allows assuming `DEVELOPER` IAM role in the dev account (which has ID of `111111111111` in this example).
 ```
 {
     "Version": "2012-10-17",
@@ -120,9 +121,11 @@ Similarly, IAM groups `STAGE_ACCESS_FOR_DEVELOPERS` and `PROD_ACCESS_FOR_DEVELOP
 }
 ```
 
-#### DEV environment setup
+Users Bob and Tom would only be allowed to access dev environment so the only only IAM group membership they will have is `DEV_ACCESS_FOR_DEVELOPERS`. Users Harry and Alice are senior developers so they will have access to all environments and will have membership in all 3 IAM groups.
 
-Role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions must have a following _trust policy_. Here `XXXXXXXXXXXX` refers to the HUB account ID.
+#### DEV account setup
+
+`DEVELOPER` role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions must have the following _trust policy_ attached. Here `XXXXXXXXXXXX` refers to the HUB account ID. Trust policy controls which external accounts can assume this role. In our case we want to allow HUB account to do it.
 
 ```
 {
@@ -144,7 +147,7 @@ Role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions must have a
 }
 ```
 
-Condition section here requires MFA code to be present in the `sts:AssumeRole` request. This CLI handles that by asking the user to provide it during `aacli auth` command execution. Every user in HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
+Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aacli` handles that by asking the user to provide it during `aacli auth` command execution. Every user in HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
 
 The actual permissions policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation` and `SQS` your policy would look as follows.
 
@@ -170,17 +173,17 @@ The actual permissions policy on this role would simply list the IAM permissions
 }
 ```
 
-Setup for `prod` and `stage` environments in our example would follow exact same policy setup.
+Setup for `prod` and `stage` environments in our example would follow the exact same policy setup.
 
 # How this CLI tool helps
 
-This CLI tool allows to conveniently follow the security model described above. It helps to securely manage HUB account credentials and easily perform downstream AWS account authentication. Here are some important features:
+This CLI tool allows to conveniently follow the security model described above. It supports and requires multi-factor authentication and provides a way to easily obtain programmatic access to your downstream AWS environments. It helps to securely manage HUB account credentials. Here are some important features:
 
-- HUB account credentials are stored in the encrypted config file on the disk. Employee is required to provide a passphrase before performing any manipulations to the CLI config or performing downstream authentication.
+- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted. If encrypted, user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
 - CLI config can hold multiple sets of credentials for different HUB accounts.
 - CLI interface features an easy to use interactive set of menus. A great usability improvement over more traditional interfaces of flags and options that are notoriously difficult to remember and slow things down.
 
-# CLI quick reference
+# Quick reference
 
 ```
 Usage: aacli <command>
