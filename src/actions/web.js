@@ -26,6 +26,11 @@ async function web() {
     const profile = cliConfig.profiles[selection]
     const { environments } = profile
 
+    if (!environments.length) {
+        console.log(`This profile has no saved environments, use "config" command to add one`.red)
+        process.exit()
+    }
+
     /* gather auth parameters */
 
     const { environment } = await Utils.prompts({

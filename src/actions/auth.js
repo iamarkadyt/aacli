@@ -29,6 +29,11 @@ async function auth() {
     const profile = cliConfig.profiles[selection]
     const { environments } = profile
 
+    if (!environments.length) {
+        console.log(`This profile has no saved environments, use "config" command to add one`.red)
+        process.exit()
+    }
+
     AWS.config.update(profile.awsCredentials)
     const STS = new AWS.STS()
 
