@@ -1,6 +1,6 @@
 # What is this?
 
-This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles. It supports MFA authentication, which combined with temporary IAM credentials provided by authentication through IAM roles makes it a great way to authenticate with AWS environments in a secure manner.
+This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles in a multi-account AWS Organization setup. It supports and requires MFA authentication which combined with temporary IAM credentials provided by authentication through IAM roles makes it a great way to authenticate with AWS environments in a secure manner.
 
 This means that packages listed below and any software dependent on them will be able to obtain access to AWS resources in the account that you choose to authenticate with. All of these libraries pull credentials from `~/.aws/credentials` file which this CLI tool updates upon every authentication.
 ```
@@ -22,7 +22,9 @@ npm install -g aacli
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in and what roles are available for assumption.
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in and what roles are available for assumption. 
+
+See [Secure AWS authentication model](#secure-aws-authentication-model) section below for more information on what is a HUB account and this multi-account setup model. Make sure you don't skip it, because this multi-account setup model is what this CLI was built for the first place.
 
 #### Creating and managing the CLI configuration file
 
@@ -49,14 +51,14 @@ Other available commands are:
 
 # Project goals
 
-This project was born from an effort to figure out a _simple_ yet _reasonably secure_ way of _programmatic_ AND _web-based_ authentication into AWS environments.
+This project was born from an effort to figure out a _simple_ yet _reasonably secure_ way of _programmatic_ authentication into AWS environments _with MFA support_.
 
 The regular approach taken by many software companies is either:
 
 - Using expensive SSO solutions (3rd party single sign-on SaaS platforms) and writing custom CLI toolkits for integrating with said platforms for programmatic AWS access (early and unnecessary complexity,  financial and development time costs).
-- Or just using plain permanent AWS IAM user credentials (terribly insecure).
+- Or not using any MFA at all and just using plain permanent AWS IAM user credentials (terribly insecure).
 
-This project aims to provide a secure and efficient middle-ground alternative to both options.
+This project aims to provide a secure and efficient middle-ground alternative to both of these options.
 
 # Secure AWS authentication model
 
@@ -67,9 +69,9 @@ User authenticates into the HUB account, then assumes roles in downstream enviro
 Below is a more detailed description of this AWS authentication flow. Actual IAM policies required to implement it will be covered in the following section.
 
 - You set up a HUB-AND-SPOKE AWS account organization with root account as the HUB and dev, stage, prod and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
-- Permanent authentication credentials for HUB account are stored on employees' machines 24/7. These credentials are attached to employees' personal IAM users in HUB account. Those IAM users only allow one action -- role assumption in downstream accounts (`sts:AssumeRole` action).
-- Granting of access to downstream accounts is done through IAM roles, and it always requires OTP multi-factor authentication step.
-- AWS credentials downloaded onto the machine by this CLI after a successful authentication with a downstream AWS environment are AWS IAM role credentials which are temporary by their nature and expire in 1 hour by default. This effectively forces credential rotation on your employees' machines every hour. And if an employee stops using an AWS environment (e.g. switched to a different activity, end of work day) access gateways from their machine to the AWS account automatically expire, effectively keeping the company-wide attack surface of that account to a reasonable minimum at all times. 
+- Permanent authentication credentials from HUB account are stored on employees' machines 24/7. These credentials are attached to employees' personal IAM users in HUB account and only allow one action which is role assumption in downstream accounts (`sts:AssumeRole` action). This combined with MFA requirement described below makes it safe to store these credentials on employees' machines 24/7.
+- Granting of access to downstream accounts is done through IAM roles, and it always requires OTP multi-factor authentication step. This is an important security measure that is required for this CLI to work. To enable MFA, every employee creates and attaches an MFA device to their IAM user in AWS web console.
+- AWS credentials downloaded onto the machine by this CLI after a successful authentication with a downstream AWS environment are AWS IAM role credentials which are temporary by their nature and expire in 1 hour by default. This effectively forces credential rotation on your employees' machines every hour. And if an employee stops using an AWS environment (e.g. switches to a different activity, end of work day) access gateways from their machine to the AWS account automatically expire, effectively keeping the company-wide attack surface of that account to a reasonable minimum at all times. 
 - In this setup access to downstream environments can be regulated on a user-by-user basis since every employee receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example a user might not be allowed to be a part of `PROD_ACCESS` IAM group.
 
 # Example IAM policies
