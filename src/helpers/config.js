@@ -1,7 +1,7 @@
 const fs = require('fs')
 const Utils = require('./other')
 const CryptoUtils = require('./crypto')
-const { globalConfig, CLI_NAME_UPPER } = require('../config')
+const { globalConfig } = require('../config')
 
 /**
  *

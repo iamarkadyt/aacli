@@ -1,5 +1,4 @@
 const { ConfUtils, Utils } = require('../helpers')
-const { CLI_NAME_UPPER } = require('../config')
 
 const Action = Object.freeze({
     ENCRYPT_CONFIG: Symbol('ENCRYPT_CONFIG'),
