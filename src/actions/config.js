@@ -107,9 +107,9 @@ async function config(actionConfig) {
     const choices = [{ title: 'Create new profile', value: Action.CREATE_NEW }]
     if (profiles.length) {
         choices.push({ title: 'Delete a profile', value: Action.DELETE_ONE })
-        choices.push({ title: 'Exit this CLI', value: Action.EXIT_CLI })
         choices.push(...profiles.map((p, i) => ({ title: `Configure profile: ${p.name}`, value: i })))
     }
+    choices.push({ title: 'Exit this CLI', value: Action.EXIT_CLI })
     const { selection } = await Utils.prompts({
         type: 'select',
         name: 'selection',
