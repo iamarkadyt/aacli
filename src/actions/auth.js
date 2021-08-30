@@ -59,7 +59,7 @@ async function auth() {
 
     /* authenticate with aws */
 
-    console.log(`Authenticating into "${environment}" environment as "${role}"...`.yellow)
+    console.log(`Authenticating into "${envName}" environment as "${role}"...`.yellow)
     const stsParams = {
         RoleArn: roleToAssumeArn,
         RoleSessionName: `${os.userInfo().username}-${username}-${envName}-${role}-${Date.now()}`,
