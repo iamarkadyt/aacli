@@ -18,9 +18,7 @@ async function crypto() {
 
     const choices = []
     if (isEncrypted) {
-        if (Utils.getEnvVar(`FF_${CLI_NAME_UPPER}_DISABLE_ENFORCE_ENCRYPTION`)) {
-            choices.push({ title: 'Decrypt the configuration file', value: Action.DECRYPT_CONFIG })
-        }
+        choices.push({ title: 'Decrypt the configuration file', value: Action.DECRYPT_CONFIG })
         choices.push({ title: 'Change config file passphrase', value: Action.CHANGE_PASSCODE })
     } else {
         choices.push({ title: 'Encrypt the configuration file', value: Action.ENCRYPT_CONFIG })

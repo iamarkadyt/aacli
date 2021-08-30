@@ -113,21 +113,6 @@ Documentation: https://github.com/iamarkadyt/aacli
 #### Renaming the CLI tool
 You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs and file system operations pull CLI name from this file. Just don't forget to update this README.md.
 
-#### Disabling config encryption
-To enable hidden decryption option in `aacli crypto` command that allows you to decrypt the configuration file (not recommended for security reasons) enable the following feature flag:
-```
-FF_AACLI_DISABLE_ENFORCE_ENCRYPTION=1 aacli crypto
-```
-You can also export this variable in your shell config file to persist it. E.g. in `~/.bashrc`:
-```
-export FF_AACLI_DISABLE_ENFORCE_ENCRYPTION=1
-```
-
-Then refresh your current shell to reload the rc file:
-```
-$ source ~/.bashrc
-```
-
 # License
 
 ```

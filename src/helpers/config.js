@@ -155,8 +155,7 @@ function loadConfigAsIs() {
 /**
  * Saves CLI config with some intelligence. If it is passed in the encrypted form, saves as is.
  * If it's passed in decrypted form AND passphrase is passed too, it encrypts the config before saving.
- * If config is passed in decrypted form WITHOUT passphrase, it checks with corporate policy on forcing encryption.
- * If encryption is forced, it asks user for a passphrase and encrypts config before saving. Otherwise saves it as is.
+ * If config is passed in decrypted form WITHOUT passphrase it saves it as is.
  *
  * @param {*} json config to save
  * @param {*} secretKey (optional) passphrase to use to encrypt the config
@@ -168,12 +167,6 @@ async function saveConfig(json, secretKey) {
 
     if (secretKey) {
         const encrypted = encryptConfig(json, secretKey)
-        return saveConfigAsIs(encrypted)
-    }
-
-    if (Utils.getEnvVar(`FF_${CLI_NAME_UPPER}_DISABLE_ENFORCE_ENCRYPTION`)) {
-        const passphrase = await getNewEncryptionKey()
-        const encrypted = encryptConfig(json, passphrase)
         return saveConfigAsIs(encrypted)
     }
 
