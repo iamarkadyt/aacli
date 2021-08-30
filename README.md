@@ -81,6 +81,7 @@ Below is an example setup that follows the principles outlined above. We look at
 Our organization setup is HUB account + dev, stage and prod AWS accounts. And we have 4 developers on the team: Bob, Harry, Alice and Tom.
 
 #### HUB account setup
+
 Create 3 IAM groups: 
 
 - `DEV_ACCESS_FOR_DEVELOPERS`,
@@ -208,7 +209,10 @@ Documentation: https://github.com/iamarkadyt/aacli
 # Extras
 
 #### Renaming the CLI tool
-You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs and file system operations pull CLI name from this file. Just don't forget to update this README.md.
+
+You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs and file system operations pull CLI name from this file. Just don't forget to refactor this README.md.
+
+It also accounts for namespaces. For example, if name field in `package.json` were to be `@orgname/cliname` CLI name would be read as `cliname` and therefore CLI configuration files directory on disk would be named `~/.cliname`.
 
 # License
 
