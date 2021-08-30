@@ -1,5 +1,5 @@
 {
-    "name": "aacli",
+    "name": "@iamarkadyt/aacli",
     "version": "1.0.0",
     "description": "AWS authentication CLI",
     "scripts": {
