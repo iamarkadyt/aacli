@@ -1,7 +1,3 @@
-# Table of contents
-
-
-
 # What is this?
 
 This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles. It supports MFA authentication, which combined with temporary IAM credentials provided by authentication through IAM roles makes it a great way to authenticate with AWS environments in a secure manner.
@@ -78,7 +74,103 @@ Below is a more detailed description of this AWS authentication flow. Actual IAM
 
 # Example IAM policies
 
-HUB account. IAM group `DEV_ACCESS`.
+#### HUB account setup
+In our example we create 3 IAM groups: 
+
+- `DEV_ACCESS_FOR_DEVELOPERS`,
+- `STAGE_ACCESS_FOR_DEVELOPERS` and
+- `PROD_ACCESS_FOR_DEVELOPERS`.
+
+We also create 4 IAM users for our developers: `bob`, `harry`, `alice`, `tom`.
+
+- Users `bob` and `tom` are only allowed to access `dev` environment so the only only IAM group membership they have is `DEV_ACCESS_FOR_DEVELOPERS`.
+- Users `harry` and `alice` are senior developers so they have access to all environments and have membership in all 3 IAM groups.
+
+IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allows assuming `DEVELOPER` IAM role in `dev` account (which has ID of `111111111111` in this example).
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "MyNewRule",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::111111111111:role/DEVELOPER"
+            ]
+        }
+    ]
+}
+```
+
+Similarly, IAM groups `STAGE_ACCESS_FOR_DEVELOPERS` and `PROD_ACCESS_FOR_DEVELOPERS` have a similar policy attached with the only difference being the account number (marked as `XXXXXXXXXXXX`):
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "MyNewRule",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::XXXXXXXXXXXX:role/DEVELOPER"
+            ]
+        }
+    ]
+}
+```
+
+#### DEV environment setup
+
+Role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions must have a following _trust policy_. Here `XXXXXXXXXXXX` refers to the HUB account ID.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::XXXXXXXXXXXX:root"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "Bool": {
+                    "aws:MultiFactorAuthPresent": "true"
+                }
+            }
+        }
+    ]
+}
+```
+
+Condition section here requires MFA code to be present in the `sts:AssumeRole` request. This CLI handles that by asking the user to provide it during `aacli auth` command execution. Every user in HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
+
+The actual permissions policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation` and `SQS` your policy would look as follows.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Rule1",
+            "Effect": "Allow",
+            "Action": [
+                "sns:*",
+                "apigateway:*",
+                "s3:*",
+                "lambda:*",
+                "dynamodb:*",
+                "cloudformation:*",
+                "sqs:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+Setup for `prod` and `stage` environments in our example would follow exact same policy setup.
 
 # How this CLI tool helps
 
