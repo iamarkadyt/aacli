@@ -11,6 +11,18 @@
     "bin": "bin/cli.js",
     "author": "iamarkadyt",
     "license": "MIT",
+    "keywords": [
+        "aws",
+        "cli",
+        "auth",
+        "authentication",
+        "mfa",
+        "2fa",
+        "otp",
+        "totp",
+        "terminal",
+        "shell"
+    ],
     "dependencies": {
         "aws-sdk": "2.966.0",
         "colors": "1.4.0",
