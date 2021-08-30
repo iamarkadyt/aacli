@@ -24,34 +24,32 @@ To install this CLI, run:
 npm install -g aacli
 ```
 
-Next up create a profile:
-```
-aacli config
-```
-
-Once a profile is created it can be used to authenticate into AWS environments:
-```
-aacli auth
-```
-
-For more information see help reference:
-```
-aacli help
-```
-
 # Usage
+
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in and what roles are available for assumption.
+
+#### Creating and managing the CLI configuration file
+
+To create or edit your CLI configuration file, run `aacli config` command. You can create new profiles, edit existing ones or delete them.
+
+<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-config.gif" alt="config usage example" />
+
+You can also manage the encryption of your configuration file with `aacli crypto` command. We recommend keeping your config file encrypted at all times as a good security practice.
+
+<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-crypto.gif" alt="crypto usage example" />
 
 #### Authentication
 
-Commands: `auth`, `unauth`, `web`
+Once configuration file is created you can start authenticating into downstream AWS environments through `aacli auth` command. You can also use `aacli unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
 
+<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/usage-0.gif" alt="usage example" />
+#### Other commands
 
-#### Configuration
+Other available commands are:
 
-Commands: `config`, `reset`, `crypto`
-
+- `aacli reset` -- Deletes CLI configuration file. May be useful if you mess it up and want to start anew.
+- `aacli web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
 
 # Project goals
 
@@ -59,7 +57,7 @@ This project was born from an effort to figure out a _simple_ yet _reasonably se
 
 The regular approach taken by many software companies is either:
 
-- Using expensive SSO solutions (3rd party single sign-on SaaS platforms) and writing custom CLI toolkits for integrating with said platforms for programmatic AWS access (complexity, unnecessary development time and financial costs).
+- Using expensive SSO solutions (3rd party single sign-on SaaS platforms) and writing custom CLI toolkits for integrating with said platforms for programmatic AWS access (early and unnecessary complexity,  financial and development time costs).
 - Or just using plain permanent AWS IAM user credentials (terribly insecure).
 
 This project aims to provide a secure and efficient middle-ground alternative to both options.
@@ -68,13 +66,19 @@ This project aims to provide a secure and efficient middle-ground alternative to
 
 <img src="https://github.com/iamarkadyt/aacli/raw/master/media/aws-flow.png" alt="secure aws flow diagram" />
 
-Here is a schema of a secure and practical AWS authentication flow:
+User authenticates into the HUB account, then assumes roles in downstream environment accounts. Role assumption returns temporary AWS credentials that can be used for interacting with a particular AWS account.
+
+Below is a more detailed description of this AWS authentication flow. Actual IAM policies required to implement it will be covered in the following section.
 
 - You set up a HUB-AND-SPOKE AWS account organization with root account as the HUB and dev, stage, prod and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
-- Permanent authentication credentials for HUB account are stored on employees' machines. These credentials are attached to employees' personal IAM users in HUB account whose IAM permissions only allow them to assume roles in downstream accounts.
+- Permanent authentication credentials for HUB account are stored on employees' machines 24/7. These credentials are attached to employees' personal IAM users in HUB account. Those IAM users only allow one action -- role assumption in downstream accounts (`sts:AssumeRole` action).
 - Granting of access to downstream accounts is done through IAM roles, and it always requires OTP multi-factor authentication step.
-- AWS credentials downloaded onto the machine after a successful authentication with a downstream AWS environment are AWS IAM role credentials which are temporary by their nature and expire in 1 hour by default. This effectively forces credential rotation on your employees' machines every hour. And if an employee stops using an AWS environment (e.g. switched to a different activity, end of work day) access gateways from their machine to the AWS account automatically expire, effectively keeping the company-wide attack surface of that account to a reasonable minimum at all times. 
-- In this setup access to downstream environments can be regulated on a user-by-user basis since every employee receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example a user might not be allowed to be a part of PROD_USERS IAM group.
+- AWS credentials downloaded onto the machine by this CLI after a successful authentication with a downstream AWS environment are AWS IAM role credentials which are temporary by their nature and expire in 1 hour by default. This effectively forces credential rotation on your employees' machines every hour. And if an employee stops using an AWS environment (e.g. switched to a different activity, end of work day) access gateways from their machine to the AWS account automatically expire, effectively keeping the company-wide attack surface of that account to a reasonable minimum at all times. 
+- In this setup access to downstream environments can be regulated on a user-by-user basis since every employee receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example a user might not be allowed to be a part of `PROD_ACCESS` IAM group.
+
+# Example IAM policies
+
+HUB account. IAM group `DEV_ACCESS`.
 
 # How this CLI tool helps
 
