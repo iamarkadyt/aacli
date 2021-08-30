@@ -17,7 +17,7 @@ List of libraries above is not exhaustive. This authentication flow will very li
 
 To install this CLI, run:
 ```
-npm install -g aacli
+npm install -g @iamarkadyt/aacli
 ```
 
 # Usage
