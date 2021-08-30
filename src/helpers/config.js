@@ -142,6 +142,9 @@ function saveConfigAsIs(json) {
  * @returns empty object if config loading failed
  */
 function loadConfigAsIs() {
+    if (!fs.existsSync(globalConfig.cliDir)) {
+        fs.mkdirSync(globalConfig.cliDir)
+    }
     let cliConfig = {}
     try {
         cliConfig = JSON.parse(fs.readFileSync(globalConfig.cliConfigPath))
