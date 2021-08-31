@@ -1,3 +1,5 @@
+<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+
 # What is this?
 
 This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles in a multi-account AWS Organization setup. It supports and requires MFA authentication which combined with temporary IAM credentials provided by authentication through IAM roles makes it a great way to authenticate with AWS environments in a secure manner.
