@@ -57,7 +57,7 @@ async function auth() {
     const { Account: HubAccountId, Arn: UserArn } = await STS.getCallerIdentity().promise()
     const username = UserArn.split('/').pop()
     const { mfaCode } = await Utils.prompts({
-        type: 'password',
+        type: 'text',
         name: 'mfaCode',
         message: 'Enter your MFA code',
     })
@@ -80,6 +80,15 @@ async function auth() {
             console.log('Wrong MFA code. Please try again.'.red)
             process.exit(1)
         }
+        if (error.code === 'AccessDenied') {
+            console.log(
+                "Could not assume the selected role. Make sure it's name is correct in the CLI config and that your IAM user (HUB account entity) is allowed to assume it"
+                    .red,
+            )
+            console.log(`${error.message}`.red)
+            process.exit(1)
+        }
+        throw error
     }
     const { AccessKeyId, SecretAccessKey, SessionToken } = Credentials
 
