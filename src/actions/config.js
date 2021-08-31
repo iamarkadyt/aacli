@@ -55,7 +55,7 @@ async function getEnvironments(profile = {}) {
 
     if (editNow) {
         // create the file and open for edit
-        const starter = { environments: [] }
+        const starter = { environments: existing }
         fs.writeFileSync(globalConfig.cliInputFiles.json, JSON.stringify(starter, null, 4), { flag: 'w' })
 
         let passingConfig = false
