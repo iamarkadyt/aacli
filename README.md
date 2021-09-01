@@ -6,7 +6,7 @@ This CLI tool allows you to programmatically authenticate into AWS accounts thro
 
 This means that when you authenticate into an AWS environment (AWS account) with this CLI, packages listed below __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain access to AWS resources__ located in that AWS account. All because libraries below pull credentials from `~/.aws/credentials` file on disk which this CLI tool updates upon every authentication.
 
-Libraries that read AWS credentials from `~/.aws/credentials`. List is not exhaustive at all. This authentication flow will continue to work with any other existing and future AWS libraries as well because they all seem to follow the same pattern for accessing AWS credentials from disk.
+Below is the list of libraries that read AWS credentials from `~/.aws/credentials`. List is not exhaustive at all. This authentication flow will continue to work with any other existing and future AWS libraries as well because they all seem to follow the same pattern for accessing AWS credentials from disk.
 - [AWS SDK](https://aws.amazon.com/getting-started/tools-sdks/). Library used for accessing AWS APIs and managing AWS resources directly from your code.
 - [AWS CDK](https://aws.amazon.com/cdk/). Library that helps define cloud infrastructure using familiar programming languages. Provides CLI for IaC code deployments.
 - [AWS CLI](https://aws.amazon.com/cli/). CLI provided by AWS that allows you to manage AWS resources right from your terminal window.
@@ -25,7 +25,7 @@ npm install -g @iamarkadyt/aacli
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in, and what roles are available for assumption. Make sure to check out [secure AWS authentication model](#secure-aws-authentication-model) section below for more information on what is a HUB account and a multi-account setup model. Please don't skip it! This model is what this CLI tool was built for in the first place.
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](#secure-aws-authentication-model) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
 
 #### Creating and managing the CLI configuration file
 
