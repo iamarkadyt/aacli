@@ -2,18 +2,19 @@
 
 # What is this?
 
-This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles in a multi-account [AWS Organizations](https://aws.amazon.com/organizations/) setup. It supports and requires MFA authentication which, combined with temporary IAM credentials provided by authentication through IAM roles, makes it a great way to authenticate with AWS environments in a very secure fashion.
+This CLI tool allows you to programmatically authenticate into AWS accounts through IAM roles in a multi-account [AWS Organizations](https://aws.amazon.com/organizations/) setup. It supports and __requires__ MFA authentication which, combined with using AWS access credentials produced by authentication through IAM roles (temporary by design), makes it a secure and convenient way to authenticate into AWS.
 
-This means that when you authenticate into an AWS environment with this CLI, packages listed below __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain access to AWS resources__ located in the account that you have authenticated into. All because libraries below pull credentials from `~/.aws/credentials` file which this CLI tool updates upon every authentication.
-```
-aws-sdk   : library used for accessing AWS APIs directly
-aws-cdk   : library for Infrastructure-as-Code definitions
-aws-cli   : CLI provided by AWS that allows you to manage AWS resources
-aws-sam   : Toolkit for managing serverless applications and CloudFormation templates
-```
-So, as an example, you could authenticate into `dev` environment first, make deployments, test changes and once confirmed authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window! It's a convenient and secure way to manage AWS credentials, provide programmatic access to AWS resources for software running on your machine and an easy way to rapidly switch roles as needed.
+This means that when you authenticate into an AWS environment (AWS account) with this CLI, packages listed below __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain access to AWS resources__ located in that AWS account. All because libraries below pull credentials from `~/.aws/credentials` file on disk which this CLI tool updates upon every authentication.
 
-List of libraries above is not exhaustive. This authentication flow will continue to work with any future AWS libraries as well, because they all seem to follow the same pattern for accessing AWS credentials from disk.
+Libraries that read AWS credentials from `~/.aws/credentials`. List is not exhaustive at all. This authentication flow will continue to work with any other existing and future AWS libraries as well, because they all seem to follow the same pattern for accessing AWS credentials from disk.
+- [AWS SDK](https://aws.amazon.com/getting-started/tools-sdks/). Library used for accessing AWS APIs and managing AWS resources directly from your code.
+- [AWS CDK](https://aws.amazon.com/cdk/). Library that helps define cloud infrastructure using familiar programming languages. Provides CLI for IaC code deployments.
+- [AWS CLI](https://aws.amazon.com/cli/). CLI provided by AWS that allows you to manage AWS resources right from your terminal window.
+- [AWS Shell](https://github.com/awslabs/aws-shell). "The interactive productivity booster for the AWS CLI".
+- [AWS SAM](https://aws.amazon.com/serverless/sam/). Toolkit and CLI for building and managing serverless applications and CloudFormation templates.
+- [RCLONE](https://rclone.org/). Data management utility that helps with synchronizing and moving large amounts of data between cloud and local storage.
+
+So, as an example, you could use this CLI to authenticate into a `dev` environment, run deployment scripts right on your local machine to upload code into your `dev` AWS account, test your changes and once ready, authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window or having to manipulate AWS credentials on your computer to switch between AWS accounts. It's a convenient and secure way to access AWS resources, manage AWS credentials, provide programmatic access to AWS for software running on your machine and an easy way to rapidly switch roles and environments as needed.
 
 # Installation
 
