@@ -8,6 +8,13 @@ This means that when you authenticate into an AWS environment (AWS account) with
 
 So, as an example, you could use this CLI to authenticate into a `dev` environment, run deployment scripts right on your local machine to upload code into your `dev` AWS account, test your changes, and once ready, authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window or having to manipulate AWS credentials on your computer to switch between AWS accounts. It's a convenient and secure way to access AWS resources, manage AWS credentials, provide programmatic access to AWS for software running on your machine, and an easy way to rapidly switch roles and environments as needed.
 
+# Why not use `aws-vault`?
+
+It's just an alternative that may fit some better than others. Few reasons:
+- Simplicity. There is no fumbling with AWS CLI profiles, no metadata server simulations, less things to tweak.
+- No need to remember CLI commands, flags and usage patterns, everything is controlled through interactable shell interfaces.
+- Written in JS and installable through `npm`. Your only dependency is `nodejs`.
+
 # Installation
 
 To install this CLI, run:
