@@ -2,18 +2,18 @@
 
 # What is this?
 
-This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles in a multi-account AWS Organization setup. It supports and requires MFA authentication which combined with temporary IAM credentials provided by authentication through IAM roles makes it a great way to authenticate with AWS environments in a secure manner.
+This CLI tool allows you to programmatically authenticate with AWS environments through IAM roles in a multi-account [AWS Organizations](https://aws.amazon.com/organizations/) setup. It supports and requires MFA authentication which, combined with temporary IAM credentials provided by authentication through IAM roles, makes it a great way to authenticate with AWS environments in a very secure fashion.
 
-This means that packages listed below and any software dependent on them will be able to obtain access to AWS resources in the account that you choose to authenticate with. All of these libraries pull credentials from `~/.aws/credentials` file which this CLI tool updates upon every authentication.
+This means that when you authenticate into an AWS environment with this CLI, packages listed below __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain access to AWS resources__ located in the account that you have authenticated into. All because libraries below pull credentials from `~/.aws/credentials` file which this CLI tool updates upon every authentication.
 ```
 aws-sdk   : library used for accessing AWS APIs directly
 aws-cdk   : library for Infrastructure-as-Code definitions
 aws-cli   : CLI provided by AWS that allows you to manage AWS resources
 aws-sam   : Toolkit for managing serverless applications and CloudFormation templates
 ```
-So, as an example, you could authenticate into `dev` environment first, make deployments, test changes and once confirmed authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window. It's a convenient and secure way to manage AWS credentials, provide programmatic access to AWS to software running on your computer and an easy way to rapidly switch roles as needed.
+So, as an example, you could authenticate into `dev` environment first, make deployments, test changes and once confirmed authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window! It's a convenient and secure way to manage AWS credentials, provide programmatic access to AWS resources for software running on your machine and an easy way to rapidly switch roles as needed.
 
-List of libraries above is not exhaustive. This authentication flow will very likely apply to any future AWS libraries as well as they seem to follow the same pattern for accessing AWS credentials from disk.
+List of libraries above is not exhaustive. This authentication flow will continue to work with any future AWS libraries as well, because they all seem to follow the same pattern for accessing AWS credentials from disk.
 
 # Installation
 
@@ -24,9 +24,7 @@ npm install -g @iamarkadyt/aacli
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in and what roles are available for assumption. 
-
-See [Secure AWS authentication model](#secure-aws-authentication-model) section below for more information on what is a HUB account and this multi-account setup model. Make sure you don't skip it, because this multi-account setup model is what this CLI was built for the first place.
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from HUB account as well as information about downstream AWS environments like account IDs, environment names, regions they are located in and what roles are available for assumption. Make sure to check out [secure AWS authentication model](#secure-aws-authentication-model) section below for more information on what is a HUB account and a multi-account setup model. Please don't skip it! This model is what this CLI tool was built for in the first place.
 
 #### Creating and managing the CLI configuration file
 
@@ -53,34 +51,44 @@ Other available commands are:
 
 # Project goals
 
-This project was born from an effort to figure out a _simple_ yet _reasonably secure_ way of _programmatic_ authentication into AWS environments _with MFA support_.
+This project was born from an effort to figure out a _simple_ yet _reasonably secure_ way of _programmatic_ authentication into AWS environments _with support for MFA authentication_.
 
 The regular approach taken by many software companies is either:
 
 - Using expensive SSO solutions (3rd party single sign-on SaaS platforms) and writing custom CLI toolkits for integrating with said platforms for programmatic AWS access (early and unnecessary complexity,  financial and development time costs).
 - Or not using any MFA at all and just using plain permanent AWS IAM user credentials (terribly insecure).
 
-This project aims to provide a secure and efficient middle-ground alternative to both of these options.
+This project aims to provide a secure and efficient alternative solution to both of these options.
+
+I also think that it's a great tool for bootstrappers or any early stage software startups built on AWS, that are not yet ready to invest into solutions like Okta which cost thousands of dollars in upfront costs (annual contract minimums), but want to have a great day-to-day cloud operations security to keep the attack surface of their digital business to a minimum.
 
 # Secure AWS authentication model
 
 <img src="https://github.com/iamarkadyt/aacli/raw/master/media/aws-flow.png" alt="secure aws flow diagram" />
 
-User authenticates into the HUB account, then assumes roles in downstream environment accounts. Role assumption returns temporary AWS credentials that can be used for interacting with a particular AWS account.
+#### What is a HUB account? And what is a multi-account setup?
 
-Below is a more detailed description of this AWS authentication flow. Actual IAM policies required to implement it will be covered in the following section.
+A multi-account setup is exactly what you have on the image above. It's a HUB account in the center and a bunch of downstream accounts around it. The HUB-and-SPOKE model. And here's how it works:
 
-- You set up a HUB-AND-SPOKE AWS account organization with root account as the HUB and dev, stage, prod and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
-- Permanent authentication credentials from HUB account are stored on employees' machines 24/7. These credentials are attached to employees' personal IAM users in HUB account and only allow one action which is role assumption in downstream accounts (`sts:AssumeRole` action). This combined with MFA requirement described below makes it safe to store these credentials on employees' machines 24/7.
-- Granting of access to downstream accounts is done through IAM roles, and it always requires OTP multi-factor authentication step. This is an important security measure that is required for this CLI to work. To enable MFA, every employee creates and attaches an MFA device to their IAM user in AWS web console.
-- AWS credentials downloaded onto the machine by this CLI after a successful authentication with a downstream AWS environment are AWS IAM role credentials which are temporary by their nature and expire in 1 hour by default. This effectively forces credential rotation on your employees' machines every hour. And if an employee stops using an AWS environment (e.g. switches to a different activity, end of work day) access gateways from their machine to the AWS account automatically expire, effectively keeping the company-wide attack surface of that account to a reasonable minimum at all times. 
-- In this setup access to downstream environments can be regulated on a user-by-user basis since every employee receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example a user might not be allowed to be a part of `PROD_ACCESS` IAM group.
+- You set up an AWS organization with root account as the `HUB` and `dev`, `stage`, `prod` and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
+- User always first authenticates into the HUB account through their IAM user credentials. These credentials are always stored on user's machine and only allow one action which is role assumption in downstream accounts (`sts:AssumeRole` action).
+- Once authenticated they then assume a role in one of the downstream environment accounts using MFA codes (crucial step). These pre-created roles could be named `DEVELOPER`, `READONLY`, `ADMIN` etc. Depending on what role they assume they receive a certain set of permissions which restricts what they can interact with in the environment account that they have authenticated into.
+
+#### Benefits of this authentication model
+
+- Access to downstream environments can be regulated on a per user basis since every user receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example user Tom might not be allowed to be a part of `PROD_ACCESS` IAM group.
+- Role assumption operation always returns _temporary_ AWS credentials that expire in 1 hour by default, effectively forcing users to rotate their credentials every hour (great security practice). In a scenario where some malware steals credentials from a user's machine, by the time a real person (attacker) gets to them they are already _worthless_.
+- Since role assumption requires MFA confirmation, a one time passcode (OTP) received by the user to confirm their identity, there is no risk in HUB account credentials being stolen either because unless the attacker possesses access to the OTP codes generator these credentials are _worthless_ too because they only allow one action which is `sts:AssumeRole` and role assumption is gated by MFA.
+
+To enable MFA, every user creates and attaches an MFA device to their IAM user in HUB account in AWS web console.
+
+In addition this CLI offers an option to encrypt HUB account credentials on disk with a custom passphrase chosen by the user.
 
 # Example IAM policies
 
 Below is an example setup that follows the principles outlined above. We look at what IAM groups, IAM users, IAM policies and roles we need to create in HUB and downstream environment accounts to implement this pattern.
 
-Our organization setup is HUB account + dev, stage and prod AWS accounts. And we have 4 developers on the team: Bob, Harry, Alice and Tom.
+Our organization setup is HUB account + `dev`, `stage` and `prod` AWS accounts. And we have 4 developers on the team: Bob, Harry, Alice and Tom.
 
 #### HUB account setup
 
@@ -154,7 +162,7 @@ Users Bob and Tom would only be allowed to access dev environment so the only on
 
 Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aacli` handles that by asking the user to provide it during `aacli auth` command execution. Every user in HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
 
-The actual permissions policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation` and `SQS` your policy would look as follows.
+The _permissions_ policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation` and `SQS` your policy would look as follows.
 
 ```
 {
@@ -182,11 +190,7 @@ Setup for `prod` and `stage` environments in our example would follow the exact 
 
 # How this CLI tool helps
 
-This CLI tool allows to conveniently follow the security model described above. It supports and requires multi-factor authentication and provides a way to easily obtain programmatic access to your downstream AWS environments. It helps to securely manage HUB account credentials. Here are some important features:
-
-- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted. If encrypted, user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
-- CLI config can hold multiple sets of credentials for different HUB accounts.
-- CLI interface features an easy to use interactive set of menus. A great usability improvement over more traditional interfaces of flags and options that are notoriously difficult to remember and slow things down.
+This CLI tool allows to conveniently follow the security model described above. It was built around it! It supports and __requires__ multi-factor authentication and provides a way to easily authenticate into downstream AWS environments, securely manage HUB account credentials and rapidly change roles when you need it.
 
 # Quick reference
 
@@ -208,7 +212,16 @@ Options:
 Documentation: https://github.com/iamarkadyt/aacli
 ```
 
-# Extras
+# Contributing
+
+All contributions are welcome! And if you have any questions please don't hesitate to reach out and start a thread in the `Discussions` tab up on this page.
+
+# Other
+
+#### CLI config file
+
+- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted. If encrypted, user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
+- CLI config can hold multiple sets of credentials for different HUB accounts.
 
 #### Renaming the CLI tool
 
