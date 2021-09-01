@@ -58,9 +58,7 @@ The regular approach taken by many software companies is either:
 - Using expensive SSO solutions (3rd party single sign-on SaaS platforms) and writing custom CLI toolkits for integrating with said platforms for programmatic AWS access (early and unnecessary complexity,  financial and development time costs).
 - Or not using any MFA at all and just using plain permanent AWS IAM user credentials (terribly insecure).
 
-This project aims to provide a secure and efficient alternative solution to both of these options.
-
-I also think that it's a great tool for bootstrappers or any early stage software startups built on AWS, that are not yet ready to invest into solutions like Okta which cost thousands of dollars in upfront costs (annual contract minimums), but want to have a great day-to-day cloud operations security to keep the attack surface of their digital business to a minimum.
+This project aims to provide a secure and efficient alternative solution to both of these options. It's a great tool for bootstrappers or any early stage software startups built on AWS, that are not yet ready to invest into solutions like Okta which cost thousands of dollars in upfront costs (annual contract minimums), but want to have a great day-to-day cloud operations security to keep the attack surface of their digital business to a minimum.
 
 # Secure AWS authentication model
 
@@ -70,7 +68,7 @@ I also think that it's a great tool for bootstrappers or any early stage softwar
 
 A multi-account setup is exactly what you have on the image above. It's a HUB account in the center and a bunch of downstream accounts around it. The HUB-and-SPOKE model. And here's how it works:
 
-- You set up an AWS organization with root account as the `HUB` and `dev`, `stage`, `prod` and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
+- You set up an [AWS organization](https://aws.amazon.com/organizations/) with root account as the `HUB` and `dev`, `stage`, `prod` and other environment accounts as SPOKES. In this setup resources of all environments are fully isolated from each other, which is a great security practice on its own. [This approach is recommended by AWS](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html).
 - User always first authenticates into the HUB account through their IAM user credentials. These credentials are always stored on user's machine and only allow one action which is role assumption in downstream accounts (`sts:AssumeRole` action).
 - Once authenticated they then assume a role in one of the downstream environment accounts using MFA codes (crucial step). These pre-created roles could be named `DEVELOPER`, `READONLY`, `ADMIN` etc. Depending on what role they assume they receive a certain set of permissions which restricts what they can interact with in the environment account that they have authenticated into.
 
@@ -78,7 +76,7 @@ A multi-account setup is exactly what you have on the image above. It's a HUB ac
 
 - Access to downstream environments can be regulated on a per user basis since every user receives a personal IAM user in the HUB account and can be restricted to possess only a certain set of IAM group memberships. For example user Tom might not be allowed to be a part of `PROD_ACCESS` IAM group.
 - Role assumption operation always returns _temporary_ AWS credentials that expire in 1 hour by default, effectively forcing users to rotate their credentials every hour (great security practice). In a scenario where some malware steals credentials from a user's machine, by the time a real person (attacker) gets to them they are already _worthless_.
-- Since role assumption requires MFA confirmation, a one time passcode (OTP) received by the user to confirm their identity, there is no risk in HUB account credentials being stolen either because unless the attacker possesses access to the OTP codes generator these credentials are _worthless_ too because they only allow one action which is `sts:AssumeRole` and role assumption is gated by MFA.
+- Since role assumption requires MFA confirmation, a one time passcode (OTP) provided by the user to confirm their identity, there is no risk in HUB account credentials being stolen either, because unless the attacker possesses access to the OTP codes generator these credentials are _worthless_ too because they only allow one action which is `sts:AssumeRole` and the role assumption operation is gated by MFA.
 
 To enable MFA, every user creates and attaches an MFA device to their IAM user in HUB account in AWS web console.
 
@@ -220,14 +218,12 @@ All contributions are welcome! And if you have any questions please don't hesita
 
 #### CLI config file
 
-- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted. If encrypted, user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
+- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted with `aacli crypto` command. If encrypted, user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
 - CLI config can hold multiple sets of credentials for different HUB accounts.
 
 #### Renaming the CLI tool
 
-You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs and file system operations pull CLI name from this file. Just don't forget to refactor this README.md.
-
-It also accounts for namespaces. For example, if name field in `package.json` were to be `@orgname/cliname` CLI name would be read as `cliname` and therefore CLI configuration files directory on disk would be named `~/.cliname`.
+You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs and file system operations pull CLI name from this file. Just don't forget to refactor this README.md. Namespaces are accounted for as well. For example, if name field in `package.json` was to be `@orgname/cliname` CLI name would be read as `cliname` and therefore CLI configuration files directory on disk would be named `~/.cliname`.
 
 # License
 
