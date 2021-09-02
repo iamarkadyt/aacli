@@ -8,14 +8,6 @@ This means that when you authenticate into an AWS environment (AWS account) with
 
 So, as an example, you could use this CLI to authenticate into a `dev` environment, run deployment scripts right on your local machine to upload code into your `dev` AWS account, test your changes, and once ready, authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window or having to manipulate AWS credentials on your computer to switch between AWS accounts. It's a convenient and secure way to access AWS resources, manage AWS credentials, provide programmatic access to AWS for software running on your machine, and an easy way to rapidly switch roles and environments as needed.
 
-# Alternatives
-
-An alternative to this tool is `aws-vault`. Below are some reasons to use `aacli`:
-
-- There is less to learn. This tool is controlled entirely through interactable shell interfaces (as shown in the [usage](#usage) section).
-- Written in JS and installable through `npm`. Your only dependency is `nodejs`.
-- Currently it takes a simpler approach for granting AWS access to processes running on the system. Temporary credentials are exposed in `~/.aws/credentials` file (default way of credential exposure in the official [aws cli](https://aws.amazon.com/cli/)). Accessing AWS does not require any specific shell signatures.
-
 # Installation
 
 To install this CLI, run:
