@@ -1,6 +1,6 @@
 require('colors')
 const yargs = require('yargs')
-const { auth, config, crypto, web, reset, unauth } = require('./actions')
+const { auth, run, config, crypto, web, reset, unauth } = require('./actions')
 const { CLI_NAME } = require('./config')
 
 function main() {
@@ -42,6 +42,12 @@ function main() {
             'Erase the CLI configuration file to start anew. May be useful if you messed something up.',
             () => {},
             () => reset(),
+        )
+        .command(
+            'run -- <cmd>',
+            'Once authenticated, use this command to run other commands with access to AWS.',
+            () => {},
+            () => web(),
         )
         .demandCommand(1)
         .strictCommands(true)
