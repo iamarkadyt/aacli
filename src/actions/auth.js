@@ -9,7 +9,7 @@ const { AWSUtils, ConfUtils, Utils } = require('../helpers')
  * CLI 'auth' command handler.
  */
 async function auth() {
-    const [cliConfig] = await ConfUtils.loadConfig()
+    const [cliConfig] = await ConfUtils.loadCliConfig()
     const profiles = _.get(cliConfig, 'profiles', [])
 
     /* load profile */
