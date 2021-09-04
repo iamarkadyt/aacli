@@ -1,8 +1,7 @@
 const fs = require('fs')
 const open = require('open')
-const { ConfUtils, Utils } = require('../helpers')
+const { ConfUtils, Utils, SchemaUtils } = require('../helpers')
 const { globalConfig } = require('../config')
-const { envsModel } = require('../schema')
 
 const Action = Object.freeze({
     CREATE_NEW: Symbol('CREATE_NEW'),
@@ -71,7 +70,7 @@ async function getEnvironments(profile = {}) {
             // parse input
             try {
                 const userInput = JSON.parse(fs.readFileSync(globalConfig.cliInputFiles.json))
-                await envsModel.validate(userInput)
+                SchemaUtils.validate(userInput, SchemaUtils.schemas.environments)
                 passingConfig = true
                 result = userInput.environments
             } catch (error) {
