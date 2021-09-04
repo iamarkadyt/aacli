@@ -124,32 +124,34 @@ async function decryptConfigWithRetry(cliConfig) {
 }
 
 /**
- * Saves JSON data to CLI configuration file. This function is dumb and unaware of config file encryption status.
+ * Saves JSON data to a configuration file. This function is dumb and unaware of it's encryption status.
  *
- * @param {*} json config to serialize and save
+ * @param {object} json config data to serialize and save
+ * @param {string} pathname path to config file
  */
-function saveConfigAsIs(json) {
+function saveConfigAsIs(pathname, json) {
     if (!fs.existsSync(globalConfig.cliDir)) {
         fs.mkdirSync(globalConfig.cliDir)
     }
     const fileContents = `${JSON.stringify(json, null, 4)}\n`
-    fs.writeFileSync(globalConfig.cliConfigPath, fileContents)
+    fs.writeFileSync(pathname, fileContents)
 }
 
 /**
- * Reads JSON data from CLI configuration file. This function is dumb and unaware of config file encryption status.
+ * Reads JSON data from a configuration file. This function is dumb and unaware of it's encryption status.
  *
- * @returns empty object if config loading failed
+ * @param {string} pathname path to config
+ * @returns config json or empty object if config loading failed
  */
-function loadConfigAsIs() {
+function loadConfigAsIs(pathname) {
     if (!fs.existsSync(globalConfig.cliDir)) {
         fs.mkdirSync(globalConfig.cliDir)
     }
-    let cliConfig = {}
+    let config = {}
     try {
-        cliConfig = JSON.parse(fs.readFileSync(globalConfig.cliConfigPath))
+        config = JSON.parse(fs.readFileSync(pathname))
     } catch {}
-    return cliConfig
+    return config
 }
 
 /**
@@ -162,15 +164,15 @@ function loadConfigAsIs() {
  */
 async function saveConfig(json, secretKey) {
     if (isEncrypted(json)) {
-        return saveConfigAsIs(json)
+        return saveConfigAsIs(globalConfig.cliConfigPath, json)
     }
 
     if (secretKey) {
         const encrypted = encryptConfig(json, secretKey)
-        return saveConfigAsIs(encrypted)
+        return saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
     }
 
-    return saveConfigAsIs(json)
+    return saveConfigAsIs(globalConfig.cliConfigPath, json)
 }
 
 /**
@@ -180,7 +182,7 @@ async function saveConfig(json, secretKey) {
  * @returns decrypted config along with passphrase used to decrypt it if applicable
  */
 async function loadConfig() {
-    const config = loadConfigAsIs()
+    const config = loadConfigAsIs(globalConfig.cliConfigPath)
 
     if (isEncrypted(config)) {
         const [decryptedConfig, passphrase] = await decryptConfigWithRetry(config)
