@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const open = require('open')
 const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 
@@ -7,7 +6,7 @@ const { AWSUtils, ConfUtils, Utils } = require('../helpers')
  */
 async function web() {
     const [cliConfig] = await ConfUtils.loadCliConfig()
-    const profiles = _.get(cliConfig, 'profiles', [])
+    const profiles = Utils.lodashGet(cliConfig, 'profiles', [])
 
     /* load profile */
 

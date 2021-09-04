@@ -33,6 +33,25 @@ function prompts(args) {
 }
 
 /**
+ * Lodash _.get() function.
+ * https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_get
+ *
+ * @param {*} obj object to look for property in
+ * @param {*} path path to property
+ * @param {*} defaultValue returned if value is not found
+ * @returns property value or default value if it's not found
+ */
+function lodashGet(obj, path, defaultValue = undefined) {
+    const travel = (regexp) =>
+        String.prototype.split
+            .call(path, regexp)
+            .filter(Boolean)
+            .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj)
+    const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/)
+    return result === undefined || result === obj ? defaultValue : result
+}
+
+/**
  * Returns a promise that resolves in <S> seconds. Can be handy to pause script execution.
  *
  * @param {*} s seconds to sleep
@@ -77,4 +96,4 @@ function getEnvVar(varName) {
     return process.env[varName]
 }
 
-module.exports = { prompts, sleepSeconds, genHash, isObject, getEnvVar }
+module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getEnvVar }
