@@ -24,7 +24,7 @@ function main() {
     const [command, ...args] = process.argv.slice(2)
 
     if (!command) {
-        console.log('Please provide a command'.red)
+        console.log('Please provide a command.'.red)
         process.exit(1)
     }
 
@@ -45,9 +45,9 @@ function main() {
         case 'reset':
             return reset()
         case 'run':
-            return run(args)
+            return run(args.slice(args.indexOf('--') + 1, args.length))
         default:
-            console.log('Unknown command provided'.red)
+            console.log('Unknown command provided.'.red)
             process.exit(1)
     }
 }
