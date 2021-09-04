@@ -1,5 +1,4 @@
-const _ = require('lodash')
-const { ConfUtils } = require('../helpers')
+const { ConfUtils, Utils } = require('../helpers')
 const child_process = require('child_process')
 
 async function run(command) {
@@ -10,7 +9,7 @@ async function run(command) {
         process.exit(1)
     }
 
-    const session = _.get(config, 'default', {})
+    const session = Utils.lodashGet(config, 'default', {})
     const { key, keyId, sessionToken, region } = session
     const env = {
         AWS_ACCESS_KEY_ID: keyId,

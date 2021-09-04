@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const fs = require('fs')
 const open = require('open')
 const { ConfUtils, Utils } = require('../helpers')
@@ -22,13 +21,13 @@ async function getAwsConfig(profile = {}) {
         type: 'text',
         name: 'accessKeyId',
         message: 'Enter your AWS_ACCESS_KEY_ID',
-        initial: _.get(profile, `awsCredentials.accessKeyId`),
+        initial: Utils.lodashGet(profile, `awsCredentials.accessKeyId`),
     })
     const { secretAccessKey } = await Utils.prompts({
         type: 'text',
         name: 'secretAccessKey',
         message: 'Enter your AWS_SECRET_ACCESS_KEY',
-        initial: _.get(profile, `awsCredentials.secretAccessKey`),
+        initial: Utils.lodashGet(profile, `awsCredentials.secretAccessKey`),
     })
 
     return { accessKeyId, secretAccessKey }
@@ -43,7 +42,7 @@ async function getAwsConfig(profile = {}) {
  */
 async function getEnvironments(profile = {}) {
     let result = null
-    const existing = _.get(profile, `environments`, [])
+    const existing = Utils.lodashGet(profile, `environments`, [])
 
     const { editNow } = await Utils.prompts({
         type: 'confirm',
@@ -100,7 +99,7 @@ async function getEnvironments(profile = {}) {
  */
 async function config(actionConfig) {
     const [cliConfig, passphrase] = actionConfig
-    let profiles = _.get(cliConfig, 'profiles', [])
+    let profiles = Utils.lodashGet(cliConfig, 'profiles', [])
 
     /* build the menu */
 

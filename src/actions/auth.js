@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk')
 const os = require('os')
 const fs = require('fs')
-const _ = require('lodash')
 const { globalConfig } = require('../config')
 const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 
@@ -10,7 +9,7 @@ const { AWSUtils, ConfUtils, Utils } = require('../helpers')
  */
 async function auth() {
     const [cliConfig] = await ConfUtils.loadCliConfig()
-    const profiles = _.get(cliConfig, 'profiles', [])
+    const profiles = Utils.lodashGet(cliConfig, 'profiles', [])
 
     /* load profile */
 
