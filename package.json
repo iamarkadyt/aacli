@@ -26,7 +26,7 @@
     "dependencies": {
         "aws-sdk": "2.966.0",
         "colors": "1.4.0",
-        "obey": "5.0.0",
+        "jsonschema": "1.4.0",
         "open": "8.2.1",
         "prompts": "2.4.1"
     },
