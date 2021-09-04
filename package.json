@@ -29,8 +29,7 @@
         "lodash": "4.17.21",
         "obey": "5.0.0",
         "open": "8.2.1",
-        "prompts": "2.4.1",
-        "yargs": "17.1.0"
+        "prompts": "2.4.1"
     },
     "devDependencies": {
         "eslint": "7.32.0",
