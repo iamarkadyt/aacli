@@ -6,7 +6,6 @@ const environments = {
     properties: {
         environments: {
             type: 'array',
-            minItems: 1,
             items: {
                 type: 'object',
                 required: ['name', 'accountId', 'region', 'roles'],
@@ -28,9 +27,9 @@ const environments = {
 }
 
 function validate(input, schema, ...rest) {
-    const result = new Validator().validate(input, schema, ...rest)
-    if (!result.valid) {
-        const error = new Error('Object has a bad structure')
+    const { errors, valid } = new Validator().validate(input, schema, ...rest)
+    if (!valid) {
+        const error = new Error(`Property ${errors[0].property.split('.').slice(1).join('.')} ${errors[0].message}`)
         error.name = 'ValidationError'
         throw error
     }
