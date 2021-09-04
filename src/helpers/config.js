@@ -155,34 +155,36 @@ function loadConfigAsIs(pathname) {
 }
 
 /**
- * Saves CLI config with some intelligence. If it is passed in the encrypted form, saves as is.
+ * Saves a config file with some intelligence. If it is passed in the encrypted form, saves as is.
  * If it's passed in decrypted form AND passphrase is passed too, it encrypts the config before saving.
  * If config is passed in decrypted form WITHOUT passphrase it saves it as is.
  *
- * @param {*} json config to save
- * @param {*} secretKey (optional) passphrase to use to encrypt the config
+ * @param {string} path path to the config file
+ * @param {object} json config to save
+ * @param {string} secretKey (optional) passphrase to use to encrypt the config
  */
-async function saveCliConfig(json, secretKey) {
+async function saveConfig(path, json, secretKey) {
     if (isEncrypted(json)) {
-        return saveConfigAsIs(globalConfig.cliConfigPath, json)
+        return saveConfigAsIs(path, json)
     }
 
     if (secretKey) {
         const encrypted = encryptConfig(json, secretKey)
-        return saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
+        return saveConfigAsIs(path, encrypted)
     }
 
-    return saveConfigAsIs(globalConfig.cliConfigPath, json)
+    return saveConfigAsIs(path, json)
 }
 
 /**
- * Loads configuration file with some intelligence. If config file is encrypted, it attempts to decrypt.
+ * Loads a config file with some intelligence. If config file is encrypted, it attempts to decrypt.
  * If it's stored decrypted on disk, returns it as is.
  *
+ * @param {string} path path to the config file
  * @returns decrypted config along with passphrase used to decrypt it if applicable
  */
-async function loadCliConfig() {
-    const config = loadConfigAsIs(globalConfig.cliConfigPath)
+async function loadConfig(path) {
+    const config = loadConfigAsIs(path)
 
     if (isEncrypted(config)) {
         const [decryptedConfig, passphrase] = await decryptConfigWithRetry(config)
@@ -190,6 +192,24 @@ async function loadCliConfig() {
     }
 
     return [config]
+}
+
+/* below are file specific config loader/saver abstractions */
+
+function saveCliConfig(...parms) {
+    return saveConfig(globalConfig.cliConfigPath, ...parms)
+}
+
+function loadCliConfig() {
+    return loadConfig(globalConfig.cliConfigPath)
+}
+
+function saveSessionConfig(...parms) {
+    return saveConfig(globalConfig.sessionConfigPath, ...parms)
+}
+
+function loadSessionConfig() {
+    return loadConfig(globalConfig.sessionConfigPath)
 }
 
 module.exports = {
@@ -203,4 +223,6 @@ module.exports = {
     loadConfigAsIs,
     saveCliConfig,
     loadCliConfig,
+    saveSessionConfig,
+    loadSessionConfig,
 }
