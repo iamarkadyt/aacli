@@ -1,8 +1,9 @@
 const { ConfUtils, Utils } = require('../helpers')
 const child_process = require('child_process')
 
-async function run(command) {
-    const config = await ConfUtils.loadSessionConfig()
+async function run(argv) {
+    const [config] = await ConfUtils.loadSessionConfig()
+    const [command, ...parms] = argv
 
     if (!Object.keys(config).length) {
         console.log(`You have no logged in sessions, please authenticate first through "auth" command.`.red)
@@ -18,7 +19,7 @@ async function run(command) {
         AWS_DEFAULT_REGION: region,
     }
 
-    child_process.spawn(command, { detached: true, stdio: 'ignore', env })
+    child_process.spawn(command, parms, { detached: true, stdio: 'ignore', env })
 }
 
 module.exports = { run }
