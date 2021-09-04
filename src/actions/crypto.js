@@ -1,4 +1,5 @@
 const { ConfUtils, Utils } = require('../helpers')
+const { globalConfig } = require('../config')
 
 const Action = Object.freeze({
     ENCRYPT_CONFIG: Symbol('ENCRYPT_CONFIG'),
@@ -10,7 +11,7 @@ const Action = Object.freeze({
  * CLI 'crypto' command handler.
  */
 async function crypto() {
-    const cliConfig = ConfUtils.loadConfigAsIs()
+    const cliConfig = ConfUtils.loadConfigAsIs(globalConfig.cliConfigPath)
     const isEncrypted = ConfUtils.isEncrypted(cliConfig)
 
     /* build the menu */
@@ -34,14 +35,14 @@ async function crypto() {
     if (selection === Action.ENCRYPT_CONFIG) {
         const secretKey = await ConfUtils.getNewEncryptionKey()
         const encrypted = ConfUtils.encryptConfig(cliConfig, secretKey)
-        ConfUtils.saveConfigAsIs(encrypted)
+        ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
     }
 
     /* handle decrypt action */
 
     if (selection === Action.DECRYPT_CONFIG) {
         const [decrypted] = await ConfUtils.decryptConfigWithRetry(cliConfig)
-        ConfUtils.saveConfigAsIs(decrypted)
+        ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, decrypted)
     }
 
     /* handle create or edit actions */
@@ -50,7 +51,7 @@ async function crypto() {
         const [decrypted] = await ConfUtils.decryptConfigWithRetry(cliConfig)
         const newSecretKey = await ConfUtils.getNewEncryptionKey()
         const encrypted = ConfUtils.encryptConfig(decrypted, newSecretKey)
-        ConfUtils.saveConfigAsIs(encrypted)
+        ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
     }
 
     console.log('Operation successful!'.green)
