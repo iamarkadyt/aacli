@@ -74,13 +74,9 @@ async function getEnvironments(profile = {}) {
                 passingConfig = true
                 result = userInput.environments
             } catch (error) {
-                if (error.name === 'SyntaxError') {
-                    console.log('Bad JSON data was provided (could not parse). Please try again.'.red)
-                } else if (error.name === 'ValidationError') {
-                    console.log(
-                        'Config has wrong structure. Please follow the required schema from documentation and try again.'
-                            .red,
-                    )
+                if (error.name === 'SyntaxError' || error.name === 'ValidationError') {
+                    console.log(`Bad JSON structure: ${error.message}.`.red)
+                    console.log('Please check out examples in documentation and try again.'.red)
                 } else {
                     throw error
                 }
