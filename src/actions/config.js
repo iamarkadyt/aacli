@@ -140,7 +140,7 @@ async function config(actionConfig) {
         if (hasConfirmed) {
             profiles = profiles.filter((el, i) => i !== toDelete)
             cliConfig.profiles = profiles
-            await ConfUtils.saveConfig(cliConfig, passphrase)
+            await ConfUtils.saveCliConfig(cliConfig, passphrase)
             console.log('Profile was successfully deleted.'.green)
         }
         return
@@ -171,7 +171,7 @@ async function config(actionConfig) {
     profile.environments = environments || []
 
     cliConfig.profiles = profiles
-    await ConfUtils.saveConfig(cliConfig, passphrase)
+    await ConfUtils.saveCliConfig(cliConfig, passphrase)
 
     if (selection === Action.CREATE_NEW) {
         console.log('Profile was successfully created.'.green)
@@ -180,7 +180,7 @@ async function config(actionConfig) {
 
 // TODO this could probably become a helper
 async function repeatAction() {
-    const actionConfig = await ConfUtils.loadConfig()
+    const actionConfig = await ConfUtils.loadCliConfig()
     /* eslint-disable no-constant-condition */
     while (true) {
         await config(actionConfig)

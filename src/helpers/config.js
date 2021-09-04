@@ -162,7 +162,7 @@ function loadConfigAsIs(pathname) {
  * @param {*} json config to save
  * @param {*} secretKey (optional) passphrase to use to encrypt the config
  */
-async function saveConfig(json, secretKey) {
+async function saveCliConfig(json, secretKey) {
     if (isEncrypted(json)) {
         return saveConfigAsIs(globalConfig.cliConfigPath, json)
     }
@@ -181,7 +181,7 @@ async function saveConfig(json, secretKey) {
  *
  * @returns decrypted config along with passphrase used to decrypt it if applicable
  */
-async function loadConfig() {
+async function loadCliConfig() {
     const config = loadConfigAsIs(globalConfig.cliConfigPath)
 
     if (isEncrypted(config)) {
@@ -201,6 +201,6 @@ module.exports = {
     decryptConfigWithRetry,
     saveConfigAsIs,
     loadConfigAsIs,
-    saveConfig,
-    loadConfig,
+    saveCliConfig,
+    loadCliConfig,
 }
