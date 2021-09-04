@@ -13,7 +13,7 @@ async function web() {
 
     if (!profiles.length) {
         console.log(`CLI configuration has no saved profiles, use "config" command to add one`.red)
-        process.exit()
+        process.exit(1)
     }
 
     const { selection } = await Utils.prompts({
@@ -28,7 +28,7 @@ async function web() {
 
     if (!environments.length) {
         console.log(`This profile has no saved environments, use "config" command to add one`.red)
-        process.exit()
+        process.exit(1)
     }
 
     /* gather auth parameters */

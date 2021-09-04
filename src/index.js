@@ -47,7 +47,7 @@ function main() {
             'run -- <cmd>',
             'Once authenticated, use this command to run other commands with access to AWS.',
             () => {},
-            () => web(),
+            () => run(),
         )
         .demandCommand(1)
         .strictCommands(true)
