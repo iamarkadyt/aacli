@@ -1,9 +1,14 @@
+const { spawn } = require('child_process')
 const { ConfUtils, Utils } = require('../helpers')
-const child_process = require('child_process')
 
+/**
+ * Regarding memory dump attacks:
+ * Execution of this handler finishes way before subprocess returns (because we do not wait for it), releasing all variables
+ * to the garbage collector.
+ */
 async function run(argv) {
     const [config] = await ConfUtils.loadSessionConfig()
-    const [command, ...parms] = argv
+    const [command, ...args] = argv
 
     if (!Object.keys(config).length) {
         console.log(`You have no logged in sessions, please authenticate first through "auth" command.`.red)
@@ -19,7 +24,7 @@ async function run(argv) {
         AWS_DEFAULT_REGION: region,
     }
 
-    child_process.spawn(command, parms, { detached: true, stdio: 'ignore', env })
+    spawn(command, args, { stdio: 'inherit', detached: true, shell: true, env })
 }
 
 module.exports = { run }
