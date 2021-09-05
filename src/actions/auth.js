@@ -21,7 +21,7 @@ async function auth() {
     const { selection } = await Utils.prompts({
         type: 'select',
         name: 'selection',
-        message: 'Select a profile to authenticate with',
+        message: '(1/5) Select a profile to use',
         choices: profiles.map((p, i) => ({ title: p.name, value: i })),
     })
 
@@ -41,19 +41,19 @@ async function auth() {
     const { environment } = await Utils.prompts({
         type: 'select',
         name: 'environment',
-        message: 'Choose an environment',
+        message: '(2/5) Choose an environment to log into',
         choices: environments.map((env) => ({ title: env.name, value: env })),
     })
     const { role } = await Utils.prompts({
         type: 'select',
         name: 'role',
-        message: 'Choose your role',
+        message: '(3/5) Choose an IAM role to use',
         choices: environment.roles.map((name) => ({ title: name, value: name })),
     })
     const { duration } = await Utils.prompts({
         type: 'number',
         name: 'duration',
-        message: 'Specify session duration (in hours, 1-12)',
+        message: '(4/5) Specify session duration (in hours, 1-12)',
         initial: 1,
         min: 1,
         max: 12,
@@ -66,7 +66,7 @@ async function auth() {
     const { mfaCode } = await Utils.prompts({
         type: 'text',
         name: 'mfaCode',
-        message: 'Enter your MFA code',
+        message: '(5/5) Enter your MFA code',
     })
 
     /* authenticate with aws */
@@ -85,11 +85,11 @@ async function auth() {
         ;({ Credentials } = await STS.assumeRole(stsParams).promise())
     } catch (error) {
         if (error.message.includes('Duration')) {
-            console.log(`Specified session duration exceeds the maximum allowed limit set on the '${role}' role.`.red)
+            console.log(`Specified session duration exceeds the maximum allowed limit set on the '${role}' role`.red)
             process.exit(1)
         }
         if (error.message.includes('MultiFactorAuthentication') || error.message.includes('MFA')) {
-            console.log('Wrong MFA code. Please try again.'.red)
+            console.log('Wrong MFA code. Please try again'.red)
             process.exit(1)
         }
         if (error.code === 'AccessDenied') {
@@ -122,7 +122,7 @@ async function auth() {
         fs.writeFileSync(globalConfig.awsConfigPath, config)
     }
 
-    console.log('Authentication successful!'.green)
+    console.log('Authentication successful'.green)
 }
 
 module.exports = { auth }

@@ -4,13 +4,13 @@ const { Utils } = require('../helpers')
 
 async function unauth() {
     if (!fs.existsSync(globalConfig.awsCredPath)) {
-        console.log('There are no AWS credentials on disk to delete.'.yellow)
+        console.log('There are no AWS credentials on disk to delete'.yellow)
         return
     }
 
     const { hasConfirmed } = await Utils.prompts({
         type: 'toggle',
-        message: "Are you sure? You'll have to re-authenticate to continue using AWS.",
+        message: "Are you sure? You'll have to re-authenticate to continue using AWS",
         name: 'hasConfirmed',
         active: 'yes',
         inactive: 'no',
@@ -20,7 +20,7 @@ async function unauth() {
     if (hasConfirmed) {
         fs.unlinkSync(globalConfig.awsCredPath)
         fs.unlinkSync(globalConfig.sessionConfigPath)
-        console.log('AWS credentials were erased from disk.'.green)
+        console.log('All temporary AWS credentials were erased from disk'.green)
     }
 }
 
