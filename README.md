@@ -17,7 +17,7 @@ npm install -g @iamarkadyt/aacli
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](https://github.com/iamarkadyt/aacli/raw/master/DEVOPS.md) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](https://github.com/iamarkadyt/aacli/blob/master/DEVOPS.md) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
 
 #### Creating and managing the CLI configuration file
 
