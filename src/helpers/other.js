@@ -94,7 +94,11 @@ function isObject(val) {
  * @returns var
  */
 function getFeatureFlag(varName) {
-    return process.env[`FF_${CLI_NAME_UPPER}_${varName}`]
+    const name = `FF_${CLI_NAME_UPPER}_${varName}`
+    return {
+        name,
+        value: process.env[name],
+    }
 }
 
 module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getFeatureFlag }
