@@ -112,12 +112,12 @@ async function auth() {
         key: SecretAccessKey,
         sessionToken: SessionToken,
     }
-    if (Utils.getEnvVar('USE_INSECURE_AWS_CREDENTIALS_FILE')) {
+    ConfUtils.saveSessionConfig({ default: sessionConfig }, passphrase)
+
+    if (Utils.getEnvVar('INSECURE_USE_AWS_CREDENTIALS_FILE')) {
         const { credConfig, config } = AWSUtils.constructAwsConfig(sessionConfig)
         fs.writeFileSync(globalConfig.awsCredPath, credConfig)
         fs.writeFileSync(globalConfig.awsConfigPath, config)
-    } else {
-        ConfUtils.saveSessionConfig({ default: sessionConfig }, passphrase)
     }
 
     console.log('Authentication successful!'.green)
