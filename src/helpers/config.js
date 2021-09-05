@@ -155,9 +155,11 @@ function loadConfigAsIs(pathname) {
 }
 
 /**
- * Saves a config file with some intelligence. If it is passed in the encrypted form, saves as is.
- * If it's passed in decrypted form AND passphrase is passed too, it encrypts the config before saving.
- * If config is passed in decrypted form WITHOUT passphrase it saves it as is.
+ * Saves a config file with some intelligence. If it's passed in the encrypted form, saves it as is.
+ * If it's passed in a decrypted form WITH the passphrase, it encrypts the config before saving.
+ * If config is passed in a decrypted form WITHOUT a passphrase, it checks the FF on disabling encryption.
+ * If encryption is disabled, config is saved as is, otherwise method asks user for a passphrase and
+ * encrypts the config before saving.
  *
  * @param {string} path path to the config file
  * @param {object} json config to save
@@ -171,6 +173,12 @@ async function saveConfig(path, json, secretKey) {
     if (secretKey) {
         const encrypted = encryptConfig(json, secretKey)
         return saveConfigAsIs(path, encrypted)
+    }
+
+    if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`)) {
+        const passphrase = await getNewEncryptionKey()
+        const encrypted = encryptConfig(json, passphrase)
+        return saveConfigAsIs(encrypted)
     }
 
     return saveConfigAsIs(path, json)
