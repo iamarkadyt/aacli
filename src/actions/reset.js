@@ -18,7 +18,7 @@ async function reset() {
     })
 
     if (hasConfirmed) {
-        fs.unlinkSync(globalConfig.cliConfigPath)
+        fs.unlinkSync(globalConfig.cliDir)
         console.log('CLI configuration was reset.'.green)
     }
 }
