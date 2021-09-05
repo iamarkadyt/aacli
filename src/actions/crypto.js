@@ -18,7 +18,7 @@ async function crypto() {
 
     const choices = []
     if (isEncrypted) {
-        if (Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`)) {
+        if (Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
             choices.push({ title: 'Decrypt the configuration file', value: Action.DECRYPT_CONFIG })
         }
         choices.push({ title: 'Change config file passphrase', value: Action.CHANGE_PASSCODE })
