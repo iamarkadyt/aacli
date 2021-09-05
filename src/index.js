@@ -52,7 +52,8 @@ function main() {
     const [command, ...args] = process.argv.slice(2)
 
     if (!command) {
-        console.log('Please provide a command.'.red)
+        console.log(helpMessage)
+        console.log('\nExpected to be invoked with a command but got none'.red)
         process.exit(1)
     }
 
@@ -75,8 +76,8 @@ function main() {
         case 'run':
             return run(args.slice(args.indexOf('--') + 1, args.length))
         default:
-            console.log('Unknown command provided.'.red)
             console.log(helpMessage)
+            console.log(`\nUnknown command '${command}'`.red)
             process.exit(1)
     }
 }
