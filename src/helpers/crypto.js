@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const Utils = require('./other')
 
 const ALGORITHM = 'aes-256-ctr'
 
@@ -11,9 +12,14 @@ const ALGORITHM = 'aes-256-ctr'
 function isSafePassword(passphrase) {
     // https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
     // below is a series of positive lookaheads (?=.*...) checking for different rules; modify as needed
-    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})')
+    const strongRegex = new RegExp('^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})')
+    const weakRegex = new RegExp('^(?=.{8,})')
+
+    if (Utils.getFeatureFlag('INSECURE_USE_WEAK_PASSWORDS').value) {
+        return weakRegex.test(passphrase) || 'At least 8 characters are required'
+    }
     return (
-        regex.test(passphrase) ||
+        strongRegex.test(passphrase) ||
         'At least 12 characters, one uppercase, one lowercase, one numeric and one special character !@#$%^&*'
     )
 }
