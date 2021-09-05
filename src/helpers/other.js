@@ -93,8 +93,8 @@ function isObject(val) {
  * @param {*} varName name of the var to get from environment
  * @returns var
  */
-function getEnvVar(varName) {
+function getFeatureFlag(varName) {
     return process.env[`FF_${CLI_NAME_UPPER}_${varName}`]
 }
 
-module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getEnvVar }
+module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getFeatureFlag }
