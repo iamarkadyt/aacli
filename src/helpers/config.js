@@ -178,7 +178,7 @@ async function saveConfig(path, json, secretKey) {
     if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
         const passphrase = await getNewEncryptionKey()
         const encrypted = encryptConfig(json, passphrase)
-        return saveConfigAsIs(encrypted)
+        return saveConfigAsIs(path, encrypted)
     }
 
     return saveConfigAsIs(path, json)
