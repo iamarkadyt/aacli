@@ -4,6 +4,7 @@ const path = require('path')
 /* eslint-disable import/newline-after-import */
 const CLI_NAME = require('../package.json').name.split('/').pop()
 const CLI_NAME_UPPER = CLI_NAME.toUpperCase()
+const CLI_VERSION = require('../package.json').version
 
 const globalConfig = {
     cliDir: path.join(os.homedir(), `.${CLI_NAME}`),
@@ -16,4 +17,4 @@ const globalConfig = {
     awsConfigPath: path.join(os.homedir(), '.aws/config'),
 }
 
-module.exports = { globalConfig, CLI_NAME, CLI_NAME_UPPER }
+module.exports = { globalConfig, CLI_NAME, CLI_NAME_UPPER, CLI_VERSION }
