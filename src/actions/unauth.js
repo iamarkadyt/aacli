@@ -19,6 +19,7 @@ async function unauth() {
 
     if (hasConfirmed) {
         fs.unlinkSync(globalConfig.awsCredPath)
+        fs.unlinkSync(globalConfig.sessionConfigPath)
         console.log('AWS credentials were erased from disk.'.green)
     }
 }
