@@ -102,7 +102,7 @@ async function auth() {
         }
         throw error
     }
-    const { AccessKeyId, SecretAccessKey, SessionToken } = Credentials
+    const { AccessKeyId, SecretAccessKey, SessionToken, Expiration } = Credentials
 
     /* save aws keys to disk */
 
@@ -111,8 +111,10 @@ async function auth() {
         keyId: AccessKeyId,
         key: SecretAccessKey,
         sessionToken: SessionToken,
+        expiry: Expiration,
     }
-    ConfUtils.saveSessionConfig({ default: sessionConfig }, passphrase)
+    const sessionName = `${selection}/${envName}/${role}`
+    ConfUtils.saveSessionConfig({ default: sessionConfig, [sessionName]: sessionConfig }, passphrase)
 
     if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').value) {
         const { credConfig, config } = AWSUtils.constructAwsConfig(sessionConfig)
