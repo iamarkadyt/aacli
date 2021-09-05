@@ -50,6 +50,14 @@ async function auth() {
         message: 'Choose your role',
         choices: environment.roles.map((name) => ({ title: name, value: name })),
     })
+    const { duration } = await Utils.prompts({
+        type: 'number',
+        name: 'duration',
+        message: 'Specify session duration (in hours, 1-12)',
+        initial: 1,
+        min: 1,
+        max: 12,
+    })
     const { name: envName, accountId, region } = environment
     const roleToAssumeArn = AWSUtils.constructRoleArn(accountId, role)
 
@@ -69,12 +77,17 @@ async function auth() {
         RoleSessionName: `${os.userInfo().username}-${username}-${envName}-${role}-${Date.now()}`,
         SerialNumber: AWSUtils.constructMfaArn(HubAccountId, username),
         TokenCode: mfaCode,
+        DurationSeconds: duration * 3600,
     }
 
     let Credentials = null
     try {
         ;({ Credentials } = await STS.assumeRole(stsParams).promise())
     } catch (error) {
+        if (error.message.includes('Duration')) {
+            console.log(`Specified session duration exceeds the maximum allowed limit set on the '${role}' role.`.red)
+            process.exit(1)
+        }
         if (error.message.includes('MultiFactorAuthentication') || error.message.includes('MFA')) {
             console.log('Wrong MFA code. Please try again.'.red)
             process.exit(1)
