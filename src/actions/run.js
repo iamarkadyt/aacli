@@ -1,11 +1,6 @@
 const { spawn } = require('child_process')
 const { ConfUtils, Utils } = require('../helpers')
 
-/**
- * Regarding memory dump attacks:
- * Execution of this handler finishes way before subprocess returns (because we do not wait for it), releasing all variables
- * to the garbage collector.
- */
 async function run(argv) {
     const [config] = await ConfUtils.loadSessionConfig()
     const [command, ...args] = argv

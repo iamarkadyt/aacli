@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const _prompts = require('prompts')
+const { CLI_NAME_UPPER } = require('../config')
 
 /**
  * Very thin wrapper around the prompts library. Adds:
@@ -93,7 +94,7 @@ function isObject(val) {
  * @returns var
  */
 function getEnvVar(varName) {
-    return process.env[varName]
+    return process.env[`FF_${CLI_NAME_UPPER}_${varName}`]
 }
 
 module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getEnvVar }

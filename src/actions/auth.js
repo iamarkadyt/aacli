@@ -8,7 +8,7 @@ const { AWSUtils, ConfUtils, Utils } = require('../helpers')
  * CLI 'auth' command handler.
  */
 async function auth() {
-    const [cliConfig] = await ConfUtils.loadCliConfig()
+    const [cliConfig, passphrase] = await ConfUtils.loadCliConfig()
     const profiles = Utils.lodashGet(cliConfig, 'profiles', [])
 
     /* load profile */
@@ -93,14 +93,19 @@ async function auth() {
 
     /* save aws keys to disk */
 
-    const { credConfig, config } = AWSUtils.constructAwsConfig({
+    const sessionConfig = {
         region,
         keyId: AccessKeyId,
         key: SecretAccessKey,
         sessionToken: SessionToken,
-    })
-    fs.writeFileSync(globalConfig.awsCredPath, credConfig)
-    fs.writeFileSync(globalConfig.awsConfigPath, config)
+    }
+    if (Utils.getEnvVar('USE_INSECURE_AWS_CREDENTIALS_FILE')) {
+        const { credConfig, config } = AWSUtils.constructAwsConfig(sessionConfig)
+        fs.writeFileSync(globalConfig.awsCredPath, credConfig)
+        fs.writeFileSync(globalConfig.awsConfigPath, config)
+    } else {
+        ConfUtils.saveSessionConfig({ default: sessionConfig }, passphrase)
+    }
 
     console.log('Authentication successful!'.green)
 }
