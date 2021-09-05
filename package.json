@@ -1,6 +1,6 @@
 {
     "name": "@iamarkadyt/aacli",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "AWS authentication CLI with built-in MFA support",
     "scripts": {
         "start": "node bin/cli.js"
