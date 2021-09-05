@@ -56,7 +56,7 @@ async function crypto() {
         ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
     }
 
-    console.log('Operation successful!'.green)
+    console.log('Operation successful'.green)
 }
 
 module.exports = { crypto }

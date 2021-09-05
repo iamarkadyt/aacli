@@ -63,7 +63,7 @@ async function getNewEncryptionKey() {
         if (newSecretKey === newSecretKeyConfirm) {
             isFailing = false
         } else {
-            console.log('Passphrases do not match. Please try again.'.yellow)
+            console.log('Passphrases do not match. Please try again'.yellow)
         }
     }
 
@@ -113,7 +113,7 @@ async function decryptConfigWithRetry(cliConfig) {
             isFailing = false
         } catch (error) {
             if (error.code === 'ERR_CRYPTO_INVALID_KEYLEN' || error.name === 'SyntaxError') {
-                console.log("Couldn't decrypt the config file. Bad passphrase. Please try again.".yellow)
+                console.log("Couldn't decrypt the config file. Bad passphrase. Please try again".yellow)
             } else {
                 throw error
             }

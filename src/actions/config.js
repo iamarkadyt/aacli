@@ -46,9 +46,7 @@ async function getEnvironments(profile = {}) {
     const { editNow } = await Utils.prompts({
         type: 'confirm',
         name: 'editNow',
-        message: `Next up is AWS downstream environment configuration. ${
-            existing.length ? 'You have an existing one on file. Edit?' : 'Would you like to provide it now?'
-        }`,
+        message: `${existing.length ? 'Edit' : 'Set up'} AWS environment configuration?`,
     })
 
     if (editNow) {
@@ -75,8 +73,8 @@ async function getEnvironments(profile = {}) {
                 result = userInput.environments
             } catch (error) {
                 if (error.name === 'SyntaxError' || error.name === 'ValidationError') {
-                    console.log(`Bad JSON structure: ${error.message}.`.red)
-                    console.log('Please check out examples in documentation and try again.'.red)
+                    console.log(`Bad JSON structure: ${error.message}`.red)
+                    console.log('Please check out examples in documentation and try again'.red)
                 } else {
                     throw error
                 }
@@ -129,13 +127,13 @@ async function config(actionConfig) {
         const { hasConfirmed } = await Utils.prompts({
             type: 'confirm',
             name: 'hasConfirmed',
-            message: `Are you sure? This action is irreversible!`,
+            message: `Are you sure? This action is irreversible`,
         })
         if (hasConfirmed) {
             profiles = profiles.filter((el, i) => i !== toDelete)
             cliConfig.profiles = profiles
             await ConfUtils.saveCliConfig(cliConfig, passphrase)
-            console.log('Profile was successfully deleted.'.green)
+            console.log('Profile was successfully deleted'.green)
         }
         return
     }
@@ -150,7 +148,7 @@ async function config(actionConfig) {
             message: 'Enter the name for the new profile',
             initial: 'default',
             validate: (name) =>
-                profiles.find((p) => p.name === name) ? `Profile already exists, choose a different name` : true,
+                profiles.find((p) => p.name === name) ? `Profile already exists. Choose a different name` : true,
         })
 
         profile = { name: profileName }
@@ -168,7 +166,7 @@ async function config(actionConfig) {
     await ConfUtils.saveCliConfig(cliConfig, passphrase)
 
     if (selection === Action.CREATE_NEW) {
-        console.log('Profile was successfully created.'.green)
+        console.log('Profile was successfully created'.green)
     }
 }
 

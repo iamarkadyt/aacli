@@ -50,9 +50,9 @@ async function web() {
 
     const webLink = AWSUtils.constructConsoleLink(accountId, role)
     console.log('Logging in...'.yellow)
-    console.log('Make sure you are already logged into the HUB account in your browser.'.yellow)
+    console.log('Make sure you are already logged into the HUB account in your browser'.yellow)
     open(webLink)
-    console.log('Operation complete.'.green)
+    console.log('Operation complete'.green)
 }
 
 module.exports = { web }
