@@ -4,8 +4,7 @@ const { Utils } = require('./helpers')
 const { auth, run, config, crypto, web, reset, unauth } = require('./actions')
 const { CLI_NAME } = require('./config')
 
-const helpMessage = `
-Usage: ${`${CLI_NAME} <command>`.cyan}
+const helpMessage = `Usage: ${`${CLI_NAME} <command>`.cyan}
 
 Commands:
   ${`${CLI_NAME} config`.cyan}
@@ -13,14 +12,14 @@ Commands:
     into downstream AWS accounts.
 
   ${`${CLI_NAME} auth`.cyan}
-    Use this command to authenticate into an AWS environment under a selected role for programmatic access.
-    By default this only enables granting access to AWS through the '${CLI_NAME} run' command (see below).
+    Use this command to authenticate into an AWS environment under a selected role for programmatic
+    access. By default this only enables granting access to AWS through the '${CLI_NAME} run' command
+    (see below).
 
-    If you want to provide system-wide access to AWS you'll have to use '~/.aws/credentials' file which is
-    insecure as credential information is stored in plain text. To enable this behaviour regardless, add the
-    '${
-        Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').name
-    }=1' environment variable into your shell environment.
+    If you want to provide system-wide access to AWS you'll have to use '~/.aws/credentials' file
+    which is insecure as credential information is stored in plain text. To enable this behaviour
+    regardless, add the '${Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').name}=1' environment variable into
+    your shell environment.
 
   ${`${CLI_NAME} web`.cyan}
     Use this command to authenticate into an AWS environment under a selected role in your browser.
@@ -40,7 +39,8 @@ Commands:
 
   ${`${CLI_NAME} run -- <cmd>`.cyan}
     Once authenticated, use this command to run other commands with access to AWS. Access is exposed
-    through variable injection which is much more secure than using plain text '~/.aws/credentials' file.
+    through variable injection which is much more secure than using plain text '~/.aws/credentials'
+    file.
 
 Options:
   ${`--help`.cyan}     Show help
