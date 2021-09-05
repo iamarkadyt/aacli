@@ -2,7 +2,7 @@ require('colors')
 
 const { Utils } = require('./helpers')
 const { auth, run, config, crypto, web, reset, unauth } = require('./actions')
-const { CLI_NAME } = require('./config')
+const { CLI_NAME, CLI_VERSION } = require('./config')
 
 const helpMessage = `Usage: ${`${CLI_NAME} <command>`.cyan}
 
@@ -42,10 +42,6 @@ Commands:
     through variable injection which is much more secure than using plain text '~/.aws/credentials'
     file.
 
-Options:
-  ${`--help`.cyan}     Show help
-  ${`--version`.cyan}  Show version number
-
 Documentation: https://github.com/iamarkadyt/${CLI_NAME}`
 
 function main() {
@@ -60,6 +56,9 @@ function main() {
     switch (command) {
         case 'help':
             console.log(helpMessage)
+            process.exit(0)
+        case 'version':
+            console.log(CLI_VERSION)
             process.exit(0)
         case 'config':
             return config()
