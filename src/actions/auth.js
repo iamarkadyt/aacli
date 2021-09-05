@@ -114,7 +114,7 @@ async function auth() {
     }
     ConfUtils.saveSessionConfig({ default: sessionConfig }, passphrase)
 
-    if (Utils.getEnvVar('INSECURE_USE_AWS_CREDENTIALS_FILE')) {
+    if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE')) {
         const { credConfig, config } = AWSUtils.constructAwsConfig(sessionConfig)
         fs.writeFileSync(globalConfig.awsCredPath, credConfig)
         fs.writeFileSync(globalConfig.awsConfigPath, config)

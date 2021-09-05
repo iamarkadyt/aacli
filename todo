@@ -1,20 +1,16 @@
-Add FFs:
-    - FF for forcing encryption
-    - FF for writing auth credentials to ~/.aws/credentials (NOT A DEFAULT BEHAVIOUR)
-      vs writing it into a ~/.aacli/session.json (DEFAULT)
-    - FF for avoiding clearing out .aws/credentials upon session.json update.
-
-Add run command:
-    - User authenticates into an environment. File session.json is updated. File ~/.aws/credentials is cleared.
-    - When 'run' command is invoked it decrypts the session.json, grabs credentials
-      starts a subprocess via child_process.exec() and injects these variables through 'env' property.
-      Hooks up process STDIN and STDOUT. OR even better separates from subprocess and exits to avoid
-      holding pwd in memory.
-
-Add a way to specify credential duration.
-    - This ELIMINATES the need for the metadata server because the first session you assume can run up to 12 hours.
-      It's only when you chain-hop it's restricted to 1 hour.
-
 Readme:
+    - Say that INSECURE metadata server is not needed in this model of hub and spoke. Max sesh duration is 12 hours.
     - Split for 2 groups of people: Devs that use it to setup local environment, and DevOps that use it to
       set it up for the organization everyone works for.
+    - Show workflow.
+    - Explain all FFs.
+    - Explain corporate config to DEVOPS.
+
+FFs:
+    FF_AACLI_INSECURE_DISABLE_ENCRYPTION
+    + FF_AACLI_INSECURE_USE_AWS_CREDENTIALS_FILE
+
+TODO:
+  Figure out a solution to core dump attacks
+  Fetching allowed maximum session duration on a role
+  Storing multiple sessions in session.json ledger, and doing "aacli run --sesh dwatch/stage/DEVELOPER -- aws s3 ls"
