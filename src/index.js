@@ -1,22 +1,50 @@
 require('colors')
+
+const { Utils } = require('./helpers')
 const { auth, run, config, crypto, web, reset, unauth } = require('./actions')
 const { CLI_NAME } = require('./config')
 
 const helpMessage = `
-Usage: ${CLI_NAME} <command>
+Usage: ${`${CLI_NAME} <command>`.cyan}
 
 Commands:
-  ${CLI_NAME} config        Configure this tool with your IAM credentials to enable downstream authentication.
-  ${CLI_NAME} auth          Authenticate into an AWS environment under a specific role for programmatic access.
-  ${CLI_NAME} web           Same as 'auth' command but authenticates into AWS environments in your BROWSER.
-  ${CLI_NAME} unauth        Delete any previously written temporary AWS credentials from disk (security practice).
-  ${CLI_NAME} crypto        Manage the encryption of the configuration file that stores your permanent AWS credentials.
-  ${CLI_NAME} reset         Erase the CLI configuration file to start anew. May be useful if you messed something up.
-  ${CLI_NAME} run -- <cmd>  Once authenticated, use this command to run other commands with access to AWS.
+  ${`${CLI_NAME} config`.cyan}
+    Use this command to configure this CLI with your HUB account credentials to enable authentication
+    into downstream AWS accounts.
+
+  ${`${CLI_NAME} auth`.cyan}
+    Use this command to authenticate into an AWS environment under a selected role for programmatic access.
+    By default this only enables granting access to AWS through the '${CLI_NAME} run' command (see below).
+
+    If you want to provide system-wide access to AWS you'll have to use '~/.aws/credentials' file which is
+    insecure as credential information is stored in plain text. To enable this behaviour regardless, add the
+    '${
+        Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').name
+    }=1' environment variable into your shell environment.
+
+  ${`${CLI_NAME} web`.cyan}
+    Use this command to authenticate into an AWS environment under a selected role in your browser.
+    To use this command make sure you are logged into the HUB account in your browser first.  
+
+  ${`${CLI_NAME} unauth`.cyan}
+    Use this command to delete any previously written temporary AWS credentials from disk. This may
+    be used as a security practice to leave no credentials behind after you're done with your work.
+
+  ${`${CLI_NAME} crypto`.cyan}
+    Use this command to manage the encryption passphrase that protects configuration files that store
+    your AWS credential information.
+
+  ${`${CLI_NAME} reset`.cyan}
+    Use this command to erase all CLI configuration files from disk. It may be useful if you messed
+    something up during configuration and want to start from scratch.
+
+  ${`${CLI_NAME} run -- <cmd>`.cyan}
+    Once authenticated, use this command to run other commands with access to AWS. Access is exposed
+    through variable injection which is much more secure than using plain text '~/.aws/credentials' file.
 
 Options:
-  --help     Show help
-  --version  Show version number
+  ${`--help`.cyan}     Show help
+  ${`--version`.cyan}  Show version number
 
 Documentation: https://github.com/iamarkadyt/${CLI_NAME}`
 
@@ -48,6 +76,7 @@ function main() {
             return run(args.slice(args.indexOf('--') + 1, args.length))
         default:
             console.log('Unknown command provided.'.red)
+            console.log(helpMessage)
             process.exit(1)
     }
 }
