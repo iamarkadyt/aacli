@@ -6,7 +6,7 @@ It supports and __requires__ MFA authentication which, combined with using AWS a
 
 Here's a usage demo for a quick taste:
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="login example" />
 
 Notice how we never have to leave the terminal window or manually manipulate AWS credentials on the computer to switch between AWS accounts. This CLI provides a toolset for convenient and secure way of accessing AWS resources, managing AWS credentials and temporary sessions, and an easy way for rapid switching of roles and environments as needed.
 
@@ -62,9 +62,19 @@ Profiles provide a convenient way to have multiple separate global configuration
 
 ### More on authentication
 
-Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. You can also use `aws-auth unauth` command to revoke all logged-in sessions (erases all temporary AWS credentials from disk).
+Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. Successful authentication creates an active session that is securely stored in CLI configuration files. You can have multiple active sessions at the same time, and you can also use `aws-auth unauth` command to revoke them all (erases all temporary AWS credentials from disk).
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+An existing active session can be used with `aws-auth run` command to execute a subcommand under a specified IAM role. Sessions have names that follow pattern of `profile/environment/role`. When you run `aws-auth run` command it presents a list of all existing active sessions that you can choose from to use for the provided subcommand. Run command signature is `aws-auth run -- <subcommand>`, an example invocation is `aws-auth run -- aws s3 ls`. Run command injects credentials into the subcommand passed after `--` sign through environment variables. Here's a full list of variables injected:
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_SESSION_TOKEN
+AWS_DEFAULT_REGION
+```
+
+Here's a demo:
+
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="login example" />
 
 ### Other commands
 
