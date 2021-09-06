@@ -125,15 +125,15 @@ Or run `aws-auth` like this:
 $ FEATURE_FLAG=1 aws-auth <command>
 ```
 
-#### `FF_AWS-AUTH_INSECURE_USE_AWS_CREDENTIALS_FILE`
+`FF_AWS-AUTH_INSECURE_USE_AWS_CREDENTIALS_FILE`
 
 If enabled, temporary AWS credentials are also written to `~/.aws/credentials` file upon authentication into an AWS environment. This provides system-wide access to your AWS requirement for all processes that will ask for it, whether you want it or not, because it's stored in plain text in a location where all AWS SDKs always automatically look into. Which can be useful, but is not recommended. If you enable this, you don't need to use `aws-auth run` command because all binaries using AWS SDKs on your system will automatically obtain access to the AWS environment that you authenticated into.
 
-#### `FF_AWS-AUTH_INSECURE_USE_WEAK_PASSWORDS`
+`FF_AWS-AUTH_INSECURE_USE_WEAK_PASSWORDS`
 
 If enabled, reduces the password requirements to just 8 characters. No special characters or digits will be required.
 
-#### `FF_AWS-AUTH_INSECURE_DISABLE_ENCRYPTION`
+`FF_AWS-AUTH_INSECURE_DISABLE_ENCRYPTION`
 
 All AWS credentials are stored in the CLI configuration files on disk which is encrypted by default. Passphrase can be changed with `aws-auth crypto` command. However this command can also used to disable encryption entirely. If feature flag above is enabled, a few secret options appear in the `aws-auth crypto` command output that allow to decrypt the configuration files.
 
