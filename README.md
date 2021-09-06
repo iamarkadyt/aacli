@@ -1,4 +1,4 @@
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
 # What is this?
 
@@ -12,35 +12,35 @@ So, as an example, you could use this CLI to authenticate into a `dev` environme
 
 To install this CLI, run:
 ```
-npm install -g @iamarkadyt/aacli
+npm install -g @iamarkadyt/aws-auth
 ```
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](https://github.com/iamarkadyt/aacli/blob/master/DEVOPS.md) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
+To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
 
 #### Creating and managing the CLI configuration file
 
-To create or edit your CLI configuration file, run `aacli config` command. You can create new profiles, edit existing ones or delete them.
+To create or edit your CLI configuration file, run `aws-auth config` command. You can create new profiles, edit existing ones or delete them.
 
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-config.gif" alt="config usage example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-config.gif" alt="config usage example" />
 
-You can also manage the encryption of your configuration file with `aacli crypto` command. We recommend keeping your config file encrypted at all times as a good security practice.
+You can also manage the encryption of your configuration file with `aws-auth crypto` command. We recommend keeping your config file encrypted at all times as a good security practice.
 
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-crypto.gif" alt="crypto usage example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-crypto.gif" alt="crypto usage example" />
 
 #### Authentication
 
-Once the configuration file is created you can start authenticating into downstream AWS environments through `aacli auth` command. You can also use `aacli unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
+Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth auth` command. You can also use `aws-auth unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
 
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
 #### Other commands
 
 Other available commands are:
 
-- `aacli reset` -- Deletes CLI configuration file. May be useful if you mess it up and want to start anew.
-- `aacli web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
+- `aws-auth reset` -- Deletes CLI configuration file. May be useful if you mess it up and want to start anew.
+- `aws-auth web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
 
 # Project goals
 

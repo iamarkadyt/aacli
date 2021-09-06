@@ -7,7 +7,7 @@ const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 /**
  * CLI 'auth' command handler.
  */
-async function auth() {
+async function login() {
     const [cliConfig, passphrase] = await ConfUtils.loadCliConfig()
     const profiles = Utils.lodashGet(cliConfig, 'profiles', [])
 
@@ -133,4 +133,4 @@ async function auth() {
     console.log('Authentication successful'.green)
 }
 
-module.exports = { auth }
+module.exports = { login }

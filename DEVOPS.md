@@ -1,6 +1,6 @@
 # Secure AWS authentication model
 
-<img src="https://github.com/iamarkadyt/aacli/raw/master/media/aws-flow.png" alt="secure aws flow diagram" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/aws-flow.png" alt="secure aws flow diagram" />
 
 #### What is a HUB account? And what is a multi-account setup?
 
@@ -96,7 +96,7 @@ Users Bob and Tom would only be allowed to access the `dev` environment so the o
 }
 ```
 
-Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aacli` handles that by asking the user to provide it during `aacli auth` command execution. Every user in the HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
+Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aws-auth` handles that by asking the user to provide it during `aws-auth auth` command execution. Every user in the HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
 
 The _permissions_ policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example, if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation`, and `SQS` your policy would look as follows.
 
@@ -128,7 +128,7 @@ Setup for `prod` and `stage` environments in our example would follow the exact 
 
 #### CLI config file
 
-- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted with `aacli crypto` command. If encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
+- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted with `aws-auth crypto` command. If encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
 - CLI config can hold multiple sets of credentials for different HUB accounts.
 
 #### Renaming the CLI tool
