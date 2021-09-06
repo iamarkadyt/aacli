@@ -198,7 +198,7 @@ async function loadConfig(path, passcode) {
 
     let passphrase
     if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
-        console.log('Your config file is not encrypted'.yellow)
+        console.log('Your configuration files are not encrypted'.yellow)
         passphrase = await getNewEncryptionKey()
         const encrypted = encryptConfig(config, passphrase)
         saveConfigAsIs(path, encrypted)
