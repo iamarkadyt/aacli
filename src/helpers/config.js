@@ -213,8 +213,8 @@ function saveCliConfig(...parms) {
     return saveConfig(globalConfig.cliConfigPath, ...parms)
 }
 
-function loadCliConfig() {
-    return loadConfig(globalConfig.cliConfigPath)
+function loadCliConfig(...parms) {
+    return loadConfig(globalConfig.cliConfigPath, ...parms)
 }
 
 module.exports = {

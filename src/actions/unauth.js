@@ -1,13 +1,8 @@
 const fs = require('fs')
 const { globalConfig } = require('../config')
-const { Utils } = require('../helpers')
+const { Utils, ConfUtils } = require('../helpers')
 
 async function unauth() {
-    if (!fs.existsSync(globalConfig.awsCredPath)) {
-        console.log('There are no AWS credentials on disk to delete'.yellow)
-        return
-    }
-
     const { hasConfirmed } = await Utils.prompts({
         type: 'toggle',
         message: "Are you sure? You'll have to re-authenticate to continue using AWS",
@@ -18,8 +13,14 @@ async function unauth() {
     })
 
     if (hasConfirmed) {
-        fs.unlinkSync(globalConfig.awsCredPath)
-        fs.unlinkSync(globalConfig.sessionConfigPath)
+        if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').value) {
+            if (fs.existsSync(globalConfig.awsCredPath)) {
+                fs.unlinkSync(globalConfig.awsCredPath)
+            }
+        }
+        const [config, passphrase] = await ConfUtils.loadCliConfig()
+        config.sessions = []
+        await ConfUtils.saveCliConfig(config, passphrase)
         console.log('All temporary AWS credentials were erased from disk'.green)
     }
 }
