@@ -1,12 +1,13 @@
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
-
 # What is this?
 
-This CLI tool allows you to programmatically authenticate into AWS accounts through IAM roles in a multi-account [AWS Organizations](https://aws.amazon.com/organizations/) setup. It supports and __requires__ MFA authentication which, combined with using AWS access credentials produced by authentication through IAM roles (temporary by design), makes it a secure and convenient way to authenticate into AWS.
+This CLI tool allows you to programmatically authenticate into AWS accounts through IAM roles in a multi-account [AWS organization](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md) setup. It supports session management, stores all AWS credentials in an encrypted file and by default only grants AWS access through environment variable injection and subprocessing to avoid storing credentials on disk in plain text.
 
-This means that when you authenticate into an AWS environment (AWS account) with this CLI, libraries like [aws sdk](https://aws.amazon.com/getting-started/tools-sdks/), [aws cdk](https://aws.amazon.com/cdk/), [aws cli](https://aws.amazon.com/cli/), [aws shell](https://github.com/awslabs/aws-shell), [aws sam](https://aws.amazon.com/serverless/sam/), [rclone](https://rclone.org/) __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain access to AWS resources__ located in that AWS account. All because these libraries pull credentials from `~/.aws/credentials` file on disk which this CLI tool updates upon every authentication.
+It supports and __requires__ MFA authentication which, combined with using AWS access credentials produced by authentication through IAM roles (temporary by design), makes it a secure and convenient way to authenticate into AWS. This means that when you authenticate into an AWS environment (AWS account) with this CLI, libraries like [aws sdk](https://aws.amazon.com/getting-started/tools-sdks/), [aws cdk](https://aws.amazon.com/cdk/), [aws cli](https://aws.amazon.com/cli/), [aws shell](https://github.com/awslabs/aws-shell), [aws sam](https://aws.amazon.com/serverless/sam/), [rclone](https://rclone.org/) __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain programmatic access to AWS resources__ located in that AWS account.
 
-So, as an example, you could use this CLI to authenticate into a `dev` environment, run deployment scripts right on your local machine to upload code into your `dev` AWS account, test your changes, and once ready, authenticate into `prod` environment to deploy your changes to production. All without ever leaving your terminal window or having to manipulate AWS credentials on your computer to switch between AWS accounts. It's a convenient and secure way to access AWS resources, manage AWS credentials, provide programmatic access to AWS for software running on your machine, and an easy way to rapidly switch roles and environments as needed.
+Here's a usage demo for a quick taste:
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
+
+Notice how we never have to leave the terminal window or manually manipulate AWS credentials on the computer to switch between AWS accounts. This CLI provides a toolset for convenient and secure way of accessing AWS resources, managing AWS credentials and temporary sessions, and an easy way for rapid switching of roles and environments as needed.
 
 # Installation
 
@@ -17,29 +18,58 @@ npm install -g @iamarkadyt/aws-auth
 
 # Usage
 
-To begin using this CLI you will first need to create a configuration file before you can start authenticating into AWS environments. This configuration file will hold your IAM user credentials from the HUB account as well as information about downstream AWS environments that you have: their account IDs, names, regions they are located in, and what roles are available in those accounts for assumption. Make sure to check out [secure AWS authentication model](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md) section below to learn how to implement this multi-account setup. Please don't skip it, this model is what this CLI tool was built for in the first place.
+### Workflow
 
-#### Creating and managing the CLI configuration file
+First, let's cover the basic workflow.
+1. If you're using this CLI for the first time, you'll have to first configure it. Use `aws-auth config` command to do that. You will be asked to provide HUB account credentials in this step, as well as environment configuration JSON. We cover HUB accounts and enviornment configuration in more detail in the next section.
+2. Once configured, use `aws-auth login` to create temporary AWS access sessions. This is the part that adds most security to this authentication flow as it requires MFA to create these temporary sessions, and AWS credentials obtained through this process expire in 1 hour by default (automatic rotation).
+3. Once logged in, use `aws-auth run` command to invoke other commands in your terminal with AWS access. A few quick examples: `aws-auth run -- aws s3 ls` or `aws-auth run -- ./deploy-my-app.js`.
 
-To create or edit your CLI configuration file, run `aws-auth config` command. You can create new profiles, edit existing ones or delete them.
+### More on configuration
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-config.gif" alt="config usage example" />
+##### What is an "environment configuration"?
 
-You can also manage the encryption of your configuration file with `aws-auth crypto` command. We recommend keeping your config file encrypted at all times as a good security practice.
+An environment configuration is a JSON array holding information about any downstream AWS environments (AWS accounts) that are available for authentication into. For example you may have a `dev` environment with following configuration:
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-crypto.gif" alt="crypto usage example" />
+```
+{
+    "name": "dev",
+    "accountId": "12312312312",
+    "region": "us-east-1",
+    "roles": [ "DEVELOPER", "ADMIN", "READONLY" ]
+}
+```
 
-#### Authentication
+This configuration lets `aws-auth` know that there is an environment named `dev` with an account ID of `12312312312` located in `us-east-1` region that has 3 roles available for assumption.
 
-Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth auth` command. You can also use `aws-auth unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
+Usually, at work, this configuration should be created, maintained and provided to you by the DevOps team. You would only need to paste it into this CLI to complete the configuration.
+
+##### What is a HUB account?
+
+A HUB account is the root account in the HUB-and-SPOKE multi-account setup that holds IAM users with permissions restricted to only one action -- `sts:AssumeRole`. Users obtain permanent credentials from this account and use them to assume roles in downstream accounts which may be named `dev`, `stage`, `prod`, etc. More information on this multi-account setup and how to implement it can be found in [DEVOPS.md](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md).
+
+Briefly, benefits of this setup are:
+- All business resources are stored in downstream AWS accounts. HUB account only controls governance and access management.
+- There is isolation between downstream environments which enhances network and access security, reduces blast radius in case of a breach, and allows for nice organization and separation of AWS resources.
+- Access to AWS resources is granted through IAM role assumption which requires MFA and returns auto-expiring temporary AWS credentials.
+
+It's important to note that this CLI was built around this multi-account model in the first place. You don't have to follow it, but it's HIGHLY recommended to do so. You can still use this CLI even if you have just 1 AWS account. The only required things are: accessing AWS resources through role assumption and using MFA.
+
+##### What are profiles?
+
+Profiles provide a convenient way to have multiple separate global configurations. An example use case is having `work` and `personal` profiles, where `work` holds credentials and environment configuration provided by the organization you may work for and `personal` holds configuration for your personal AWS accounts that you use for your side projects.
+
+### More on authentication
+
+Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. You can also use `aws-auth unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
 
 <img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
-#### Other commands
+### Other commands
 
 Other available commands are:
 
-- `aws-auth reset` -- Deletes CLI configuration file. May be useful if you mess it up and want to start anew.
+- `aws-auth reset` -- Deletes CLI configuration files. Might come useful if you decided to erase all configuration to start from scratch.
 - `aws-auth web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
 
 # Project goals
@@ -55,11 +85,7 @@ This project aims to provide a secure and efficient alternative solution to both
 
 # Contributing
 
-All contributions are welcome! And if you have any questions please don't hesitate to reach out and start a thread in the `Discussions` tab up on this page.
-
-Below are main design practices to abide by. They help keep this software easy and convenient to use. And user experience is the number 1 priority!
-- _The less user has to configure, the better!_ As much as possible any information required to do something must be deduced from available user input rather than asked from a user. As much as we can, we should store any information we work with in the configuration files to avoid asking for information twice. Additionally, if some information can be retrieved by making a call to AWS API then that should be always tried first.
-- _The less user has to remember, things like CLI flags or parameters or arguments, the better._ This is the reason behind choosing interactive menus over more traditional switch interfaces.
+See [CONTRIBUTING.md](https://github.com/iamarkadyt/aws-auth/blob/master/CONTRIBUTING.md).
 
 # License
 
