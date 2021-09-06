@@ -1,7 +1,7 @@
 {
-    "name": "@iamarkadyt/aacli",
-    "version": "1.4.1",
-    "description": "AWS authentication CLI with built-in MFA support",
+    "name": "@iamarkadyt/aws-auth",
+    "version": "2.0.0",
+    "description": "AWS authentication CLI with built-in support for MFA, secure credential storage and easy IAM role switching.",
     "scripts": {
         "start": "node bin/cli.js"
     },
@@ -21,7 +21,9 @@
         "otp",
         "totp",
         "terminal",
-        "shell"
+        "shell",
+        "interactive",
+        "easy"
     ],
     "dependencies": {
         "aws-sdk": "2.966.0",

@@ -1,7 +1,7 @@
 require('colors')
 
 const { Utils } = require('./helpers')
-const { auth, run, config, crypto, web, reset, unauth } = require('./actions')
+const { login, run, config, crypto, web, reset, unauth } = require('./actions')
 const { CLI_NAME, CLI_VERSION } = require('./config')
 
 const helpMessage = `Usage: ${`${CLI_NAME} <command>`.cyan}
@@ -11,7 +11,7 @@ Commands:
     Use this command to configure this CLI with your HUB account credentials to enable authentication
     into downstream AWS accounts.
 
-  ${`${CLI_NAME} auth`.cyan}
+  ${`${CLI_NAME} login`.cyan}
     Use this command to authenticate into an AWS environment under a selected role for programmatic
     access. By default this only enables granting access to AWS through the '${CLI_NAME} run' command
     (see below).
@@ -68,8 +68,8 @@ function main() {
             process.exit(0)
         case 'config':
             return config()
-        case 'auth':
-            return auth()
+        case 'login':
+            return login()
         case 'web':
             return web()
         case 'unauth':
