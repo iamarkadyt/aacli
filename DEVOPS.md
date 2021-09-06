@@ -18,7 +18,7 @@ A multi-account setup is exactly what you have on the image above. It's a HUB ac
 
 To enable MFA, every user creates and attaches an MFA device to their IAM user in HUB account in AWS web console.
 
-In addition, this CLI offers an option to encrypt HUB account credentials on disk with a custom passphrase chosen by the user.
+In addition, this CLI requires encryption of all credential-holding files on disk with a custom passphrase chosen by the user.
 
 # Example IAM policies
 
@@ -34,9 +34,9 @@ Create 3 IAM groups:
 - `STAGE_ACCESS_FOR_DEVELOPERS` and
 - `PROD_ACCESS_FOR_DEVELOPERS`.
 
-Then create 4 IAM users for our developers: Bob, Harry, Alice, Tom.
+Then create 4 IAM users for our developers: Bob, Harry, Alice, Tom. After IAM users are created, everyone creates and assigns an MFA device (like Google Authenticator) to their IAM user.
 
-IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allows assuming `DEVELOPER` IAM role in the dev account (which has an ID of `111111111111` in this example).
+IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allows assuming `DEVELOPER` IAM role in the `dev` account (which has an ID of `111111111111` in this example).
 ```
 {
     "Version": "2012-10-17",
@@ -53,28 +53,13 @@ IAM group `DEV_ACCESS_FOR_DEVELOPERS` has the following policy attached. It allo
 }
 ```
 
-Similarly, IAM groups `STAGE_ACCESS_FOR_DEVELOPERS` and `PROD_ACCESS_FOR_DEVELOPERS` have a similar policy attached with the only difference being the account number (marked as `XXXXXXXXXXXX`):
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "MyNewRule",
-            "Effect": "Allow",
-            "Action": "sts:AssumeRole",
-            "Resource": [
-                "arn:aws:iam::XXXXXXXXXXXX:role/DEVELOPER"
-            ]
-        }
-    ]
-}
-```
+Similarly, IAM groups `STAGE_ACCESS_FOR_DEVELOPERS` and `PROD_ACCESS_FOR_DEVELOPERS` have a similar policy attached with the only difference being the account number.
 
 Users Bob and Tom would only be allowed to access the `dev` environment so the only IAM group membership they will have is `DEV_ACCESS_FOR_DEVELOPERS`. Users Harry and Alice are senior developers so they will have access to all environments and will have membership in all 3 IAM groups.
 
 #### DEV account setup
 
-`DEVELOPER` role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions must have the following _trust policy_ attached. Here `XXXXXXXXXXXX` refers to the HUB account ID. Trust policy controls which external accounts can assume this role. In our case, we want to allow the HUB account to do it.
+`DEVELOPER` role referenced in `DEV_ACCESS_FOR_DEVELOPERS` IAM group permissions is what we're going to use to grant access to AWS resources in `dev` environment to members of `DEV_ACCESS_FOR_DEVELOPERS`. It must have the following _trust policy_ attached. Here `XXXXXXXXXXXX` refers to the HUB account ID. Trust policy controls which external accounts can assume this role. In our case, we want to allow the HUB account to do it.
 
 ```
 {
@@ -96,9 +81,9 @@ Users Bob and Tom would only be allowed to access the `dev` environment so the o
 }
 ```
 
-Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aws-auth` handles that by asking the user to provide it during `aws-auth auth` command execution. Every user in the HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
+Condition section here requires MFA code to be present in the `sts:AssumeRole` request. `aws-auth` handles that by asking the user to provide it during `aws-auth login` command execution. Every user in the HUB account must attach their own MFA device to their user account (Google Authenticator or similar OTP solution) for this to work.
 
-The _permissions_ policy on this role would simply list the IAM permissions you'd want the developers to have when they authenticate into this environment. For example, if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation`, and `SQS` your policy would look as follows.
+The actual _permissions_ policy on this role would control the resources that you'd want the developers to have access to when they authenticate into this environment. For example, if you wanted to allow access to `SNS`, `API Gateway`, `S3`, `AWS Lambda`, `DynamoDB`, `CloudFormation`, and `SQS` your policy would look as follows.
 
 ```
 {
@@ -126,10 +111,33 @@ Setup for `prod` and `stage` environments in our example would follow the exact 
 
 # Other
 
-#### CLI config file
+#### Feature flags
 
-- HUB account credentials are stored in the CLI config file on the disk that can be easily encrypted with `aws-auth crypto` command. If encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication.
-- CLI config can hold multiple sets of credentials for different HUB accounts.
+If security is not a top priority for you, there are some feature flags you can disable to reduce usage friction. This is not recommended, however.
+
+To enable a feature flag add the following to your `~/.bashrc`:
+```
+export FEATURE_FLAG=1
+```
+
+Or run `aws-auth` like this:
+```
+$ FEATURE_FLAG=1 aws-auth <command>
+```
+
+#### `FF_AWS-AUTH_INSECURE_USE_AWS_CREDENTIALS_FILE`
+
+If enabled, temporary AWS credentials are also written to `~/.aws/credentials` file upon authentication into an AWS environment. This provides system-wide access to your AWS requirement for all processes that will ask for it, whether you want it or not, because it's stored in plain text in a location where all AWS SDKs always automatically look into. Which can be useful, but is not recommended. If you enable this, you don't need to use `aws-auth run` command because all binaries using AWS SDKs on your system will automatically obtain access to the AWS environment that you authenticated into.
+
+#### `FF_AWS-AUTH_INSECURE_USE_WEAK_PASSWORDS`
+
+If enabled, reduces the password requirements to just 8 characters. No special characters or digits will be required.
+
+#### `FF_AWS-AUTH_INSECURE_DISABLE_ENCRYPTION`
+
+All AWS credentials are stored in the CLI configuration files on disk which is encrypted by default. Passphrase can be changed with `aws-auth crypto` command. However this command can also used to disable encryption entirely. If feature flag above is enabled, a few secret options appear in the `aws-auth crypto` command output that allow to decrypt the configuration files.
+
+When a configuration file is encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication. When it's decrypted, passphrase is not asked for any operations. But with that your AWS credentials, both temporary and permanent, are stored in plain text on disk in `~/.aws-auth` directory.
 
 #### Renaming the CLI tool
 
