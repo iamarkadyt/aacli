@@ -157,10 +157,8 @@ function loadConfigAsIs(pathname) {
 /**
  * Saves a config file with some intelligence. If it's passed in the encrypted form, saves it as is.
  * If it's passed in a decrypted form WITH the passphrase, it encrypts the config before saving.
- * If config is passed in a decrypted form WITHOUT a passphrase, it checks the FF on disabling encryption.
- * If encryption is disabled, config is saved as is, otherwise method asks user for a passphrase and
- * encrypts the config before saving.
- *
+ * If config is passed in a decrypted form WITHOUT a passphrase, it saves it as is.
+ * *
  * @param {string} path path to the config file
  * @param {object} json config to save
  * @param {string} secretKey (optional) passphrase to use to encrypt the config
@@ -175,18 +173,12 @@ async function saveConfig(path, json, secretKey) {
         return saveConfigAsIs(path, encrypted)
     }
 
-    if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
-        const passphrase = await getNewEncryptionKey()
-        const encrypted = encryptConfig(json, passphrase)
-        return saveConfigAsIs(path, encrypted)
-    }
-
     return saveConfigAsIs(path, json)
 }
 
 /**
  * Loads a config file with some intelligence. If config file is encrypted, it attempts to decrypt.
- * If it's stored decrypted on disk, returns it as is.
+ * If it's stored decrypted on disk, function will attempt to encrypt it before returning it.
  *
  * @param {string} path path to the config file
  * @param {string} passcode if provided, method will use it to decrypt the file
@@ -204,7 +196,15 @@ async function loadConfig(path, passcode) {
         return [decryptedConfig, passphrase]
     }
 
-    return [config]
+    let passphrase
+    if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
+        console.log('Your config file is not encrypted'.yellow)
+        passphrase = await getNewEncryptionKey()
+        const encrypted = encryptConfig(config, passphrase)
+        saveConfigAsIs(path, encrypted)
+    }
+
+    return [config, passphrase]
 }
 
 /* below are file specific config loader/saver abstractions */
