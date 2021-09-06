@@ -81,7 +81,8 @@ async function getEnvironments(profile = {}) {
             }
         }
         // cleanup for security
-        fs.unlinkSync(globalConfig.cliInputFiles.json)
+        const content = { environments: [] }
+        fs.writeFileSync(globalConfig.cliInputFiles.json, JSON.stringify(content, null, 4), { flag: 'w' })
     }
 
     return result
