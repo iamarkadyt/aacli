@@ -24,9 +24,7 @@ function prompts(args) {
         { ...args, message: finalMessage },
         {
             onCancel: () => {
-                process.stdout.write(
-                    "Caught interrupt sequence, aborting execution. I'll be here if you need me.\n".yellow,
-                )
+                process.stdout.write('Caught interrupt sequence. Exiting CLI\n'.yellow)
                 process.exit(0)
             },
         },
