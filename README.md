@@ -6,7 +6,7 @@ It supports and __requires__ MFA authentication which, combined with using AWS a
 
 Here's a usage demo for a quick taste:
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="login example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/login.gif" alt="login example" />
 
 Notice how we never have to leave the terminal window or manually manipulate AWS credentials on the computer to switch between AWS accounts. This CLI provides a toolset for convenient and secure way of accessing AWS resources, managing AWS credentials and temporary sessions, and an easy way for rapid switching of roles and environments as needed.
 
@@ -80,7 +80,7 @@ AWS_DEFAULT_REGION
 
 Here's a demo:
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="login example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/login.gif" alt="login example" />
 
 ### Other commands
 
