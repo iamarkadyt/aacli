@@ -189,12 +189,17 @@ async function saveConfig(path, json, secretKey) {
  * If it's stored decrypted on disk, returns it as is.
  *
  * @param {string} path path to the config file
+ * @param {string} passcode if provided, method will use it to decrypt the file
  * @returns decrypted config along with passphrase used to decrypt it if applicable
  */
-async function loadConfig(path) {
+async function loadConfig(path, passcode) {
     const config = loadConfigAsIs(path)
 
     if (isEncrypted(config)) {
+        if (passcode) {
+            const [decryptedConfig] = decryptConfig(config, passcode)
+            return [decryptedConfig, passcode]
+        }
         const [decryptedConfig, passphrase] = await decryptConfigWithRetry(config)
         return [decryptedConfig, passphrase]
     }
