@@ -142,3 +142,9 @@ When a configuration file is encrypted, a user is required to provide a passphra
 #### Renaming the CLI tool
 
 You can fork this repository for yourself or your company and change the name of the CLI tool to something different by updating the name field in `package.json` file. All scripts, terminal logs, and file system operations pull the CLI name from this file. Just don't forget to refactor this README.md. Namespaces are accounted for as well. For example, if the name field in `package.json` was to be `@orgname/cliname` CLI name would be read as `cliname`, and therefore CLI configuration files directory on disk would be named `~/.cliname`.
+
+#### Metadata servers
+
+This CLI does not support simulating AWS metadata servers because they are inherently insecure. Access to your AWS credentials is provided in plain text to anyone who asks for it. This is even more inferior to storing credentials in plaintext on disk because you can't control even file permissions.
+
+Instead, we suggest that you set up IAM roles that allow longer sessions, AWS supports ranges of up to 12 hours for non role-chaining role assumption operations. This will keep your credentials secure in the encrypted CLI configuration files, while providing an uninterrupted access to AWS for up to 12 hours, which is the problem that metadata servers were created to solve. During `aws-auth login` you can specify preferred session duration (IAM Role being assumed must allow it in it's settings). Just avoid role-chaining. That is when you assume a role from a role, something that this CLI was not built to support, really. AWS imposes certain limits on role-chaining like restricting certain IAM actions and limiting the session duration to 1 hour maximum. To avoid role-chaining always assume roles from IAM user credentials. This is the default behaviour, you add your HUB account credentials into your CLI configuration, then start to assume IAM roles.
