@@ -209,12 +209,12 @@ async function loadConfig(path, passcode) {
 
 /* below are file specific config loader/saver abstractions */
 
-function saveCliConfig(...parms) {
-    return saveConfig(globalConfig.cliConfigPath, ...parms)
+function saveCliConfig(json, secretKey) {
+    return saveConfig(globalConfig.cliConfigPath, json, secretKey)
 }
 
-function loadCliConfig(...parms) {
-    return loadConfig(globalConfig.cliConfigPath, ...parms)
+function loadCliConfig(passcode) {
+    return loadConfig(globalConfig.cliConfigPath, passcode)
 }
 
 module.exports = {

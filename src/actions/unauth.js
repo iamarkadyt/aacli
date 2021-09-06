@@ -19,8 +19,10 @@ async function unauth() {
             }
         }
         const [config, passphrase] = await ConfUtils.loadCliConfig()
-        config.sessions = []
-        await ConfUtils.saveCliConfig(config, passphrase)
+        if (Object.keys(config).length) {
+            config.sessions = []
+            await ConfUtils.saveCliConfig(config, passphrase)
+        }
         console.log('All temporary AWS credentials were erased from disk'.green)
     }
 }
