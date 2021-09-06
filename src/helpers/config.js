@@ -217,14 +217,6 @@ function loadCliConfig() {
     return loadConfig(globalConfig.cliConfigPath)
 }
 
-function saveSessionConfig(...parms) {
-    return saveConfig(globalConfig.sessionConfigPath, ...parms)
-}
-
-function loadSessionConfig() {
-    return loadConfig(globalConfig.sessionConfigPath)
-}
-
 module.exports = {
     isEncrypted,
     getEncryptionKey,
@@ -236,6 +228,4 @@ module.exports = {
     loadConfigAsIs,
     saveCliConfig,
     loadCliConfig,
-    saveSessionConfig,
-    loadSessionConfig,
 }
