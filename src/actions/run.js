@@ -2,12 +2,17 @@ const { spawn } = require('child_process')
 const { ConfUtils, Utils } = require('../helpers')
 
 async function run(argv) {
-    const [config] = await ConfUtils.loadSessionConfig()
+    const [config, passphrase] = await ConfUtils.loadCliConfig()
+    const sessions = Utils.lodashGet(config, 'sessions', [])
     const [command, ...args] = argv
-    const activeSessions = config.filter((session) => new Date(session.expiry) > Date.now())
+    const activeSessions = sessions.filter((s) => new Date(s.expiry) > Date.now())
+
+    // ditch inactive sessions from CLI config to keep it clean and small
+    config.sessions = activeSessions
+    await ConfUtils.saveCliConfig(config, passphrase)
 
     if (!activeSessions.length) {
-        console.log(`You have no logged in sessions, please authenticate first through "auth" command`.red)
+        console.log(`You have no active sessions, please authenticate first through "auth" command`.red)
         process.exit(1)
     }
 

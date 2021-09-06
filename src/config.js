@@ -12,7 +12,6 @@ const globalConfig = {
     cliInputFiles: {
         json: path.join(os.homedir(), `.${CLI_NAME}`, 'input.json'),
     },
-    sessionConfigPath: path.join(os.homedir(), `.${CLI_NAME}`, 'sessions.json'),
     awsCredPath: path.join(os.homedir(), '.aws/credentials'),
     awsConfigPath: path.join(os.homedir(), '.aws/config'),
 }
