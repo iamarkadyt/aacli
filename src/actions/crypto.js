@@ -2,8 +2,8 @@ const { ConfUtils, Utils } = require('../helpers')
 const { globalConfig } = require('../config')
 
 const Action = Object.freeze({
-    ENCRYPT_CONFIG: Symbol('ENCRYPT_CONFIG'),
-    DECRYPT_CONFIG: Symbol('DECRYPT_CONFIG'),
+    ENCRYPT_CONFIGS: Symbol('ENCRYPT_CONFIGS'),
+    DECRYPT_CONFIGS: Symbol('DECRYPT_CONFIGS'),
     CHANGE_PASSCODE: Symbol('CHANGE_PASSCODE'),
 })
 
@@ -19,11 +19,11 @@ async function crypto() {
     const choices = []
     if (isEncrypted) {
         if (Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
-            choices.push({ title: 'Decrypt the configuration file', value: Action.DECRYPT_CONFIG })
+            choices.push({ title: 'Decrypt configuration files', value: Action.DECRYPT_CONFIGS })
         }
-        choices.push({ title: 'Change config file passphrase', value: Action.CHANGE_PASSCODE })
+        choices.push({ title: 'Change encryption passphrase', value: Action.CHANGE_PASSCODE })
     } else {
-        choices.push({ title: 'Encrypt the configuration file', value: Action.ENCRYPT_CONFIG })
+        choices.push({ title: 'Encrypt configuration files', value: Action.ENCRYPT_CONFIGS })
     }
     const { selection } = await Utils.prompts({
         type: 'select',
@@ -34,7 +34,7 @@ async function crypto() {
 
     /* handle encrypt action */
 
-    if (selection === Action.ENCRYPT_CONFIG) {
+    if (selection === Action.ENCRYPT_CONFIGS) {
         const secretKey = await ConfUtils.getNewEncryptionKey()
         const encrypted = ConfUtils.encryptConfig(cliConfig, secretKey)
         ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, encrypted)
@@ -42,7 +42,7 @@ async function crypto() {
 
     /* handle decrypt action */
 
-    if (selection === Action.DECRYPT_CONFIG) {
+    if (selection === Action.DECRYPT_CONFIGS) {
         const [decrypted] = await ConfUtils.decryptConfigWithRetry(cliConfig)
         ConfUtils.saveConfigAsIs(globalConfig.cliConfigPath, decrypted)
     }
