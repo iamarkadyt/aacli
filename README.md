@@ -5,6 +5,7 @@ This CLI tool allows you to programmatically authenticate into AWS accounts thro
 It supports and __requires__ MFA authentication which, combined with using AWS access credentials produced by authentication through IAM roles (temporary by design), makes it a secure and convenient way to authenticate into AWS. This means that when you authenticate into an AWS environment (AWS account) with this CLI, libraries like [aws sdk](https://aws.amazon.com/getting-started/tools-sdks/), [aws cdk](https://aws.amazon.com/cdk/), [aws cli](https://aws.amazon.com/cli/), [aws shell](https://github.com/awslabs/aws-shell), [aws sam](https://aws.amazon.com/serverless/sam/), [rclone](https://rclone.org/) __and any software dependent on them__, like custom deployment scripts or tools or any other scripts that access AWS, __obtain programmatic access to AWS resources__ located in that AWS account.
 
 Here's a usage demo for a quick taste:
+
 <img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
 Notice how we never have to leave the terminal window or manually manipulate AWS credentials on the computer to switch between AWS accounts. This CLI provides a toolset for convenient and secure way of accessing AWS resources, managing AWS credentials and temporary sessions, and an easy way for rapid switching of roles and environments as needed.
@@ -53,7 +54,7 @@ Briefly, benefits of this setup are:
 - There is isolation between downstream environments which enhances network and access security, reduces blast radius in case of a breach, and allows for nice organization and separation of AWS resources.
 - Access to AWS resources is granted through IAM role assumption which requires MFA and returns auto-expiring temporary AWS credentials.
 
-It's important to note that this CLI was built around this multi-account model in the first place. You don't have to follow it, but it's HIGHLY recommended to do so. You can still use this CLI even if you have just 1 AWS account. The only required things are: accessing AWS resources through role assumption and using MFA.
+It's important to note that this CLI was built around this multi-account model in the first place. You don't have to follow it, but it's HIGHLY recommended to do so. You can still use this CLI even if you have just 1 AWS account. The only required things are accessing AWS resources through role assumption and using MFA. Again, more details on how to implement this setup can be found in [DEVOPS.md](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md).
 
 ##### What are profiles?
 
@@ -61,7 +62,7 @@ Profiles provide a convenient way to have multiple separate global configuration
 
 ### More on authentication
 
-Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. You can also use `aws-auth unauth` command to revoke access to an AWS environment (erases temporary AWS credentials from disk).
+Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. You can also use `aws-auth unauth` command to revoke all logged-in sessions (erases all temporary AWS credentials from disk).
 
 <img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/cli-cmd-auth-unauth.gif" alt="auth usage example" />
 
@@ -85,7 +86,9 @@ This project aims to provide a secure and efficient alternative solution to both
 
 # Contributing
 
-See [CONTRIBUTING.md](https://github.com/iamarkadyt/aws-auth/blob/master/CONTRIBUTING.md).
+All contributions are welcome! And if you have any questions please don't hesitate to reach out and start a thread in the `Discussions` tab up on this page.
+
+For guidelines see [CONTRIBUTING.md](https://github.com/iamarkadyt/aws-auth/blob/master/CONTRIBUTING.md).
 
 # License
 
