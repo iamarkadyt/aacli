@@ -30,7 +30,7 @@ First, let's cover the basic workflow.
 
 During the first initialization of the config you will be asked to provide a passphrase. It will be used to encrypt the store that will hold all your AWS credentials. To change the encryption passphrase use `aws-auth crypto` command.
 
-##### What is an "environment configuration"?
+#### What is an "environment configuration"?
 
 An environment configuration is a JSON array holding information about any downstream AWS environments (AWS accounts) that are available for authentication into. For example you may have a `dev` environment with following configuration:
 
@@ -51,7 +51,7 @@ This configuration lets `aws-auth` know that there is an environment named `dev`
 
 Usually, at work, this configuration should be created, maintained and provided to you by the DevOps team. You would only need to paste it into this CLI to complete the configuration.
 
-##### What is a HUB account?
+#### What is a HUB account?
 
 A HUB account is the root account in the HUB-and-SPOKE multi-account setup that holds IAM users with permissions restricted to only one action -- `sts:AssumeRole`. Users obtain permanent credentials from this account and use them to assume roles in downstream accounts which may be named `dev`, `stage`, `prod`, etc. More information on this multi-account setup and how to implement it can be found in [DEVOPS.md](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md).
 
@@ -62,7 +62,7 @@ Briefly, benefits of this setup are:
 
 It's important to note that this CLI was built around this multi-account model in the first place. You don't have to follow it, but it's HIGHLY recommended to do so. You can still use this CLI even if you have just 1 AWS account. The only required things are accessing AWS resources through role assumption and using MFA. Again, more details on how to implement this setup can be found in [DEVOPS.md](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md).
 
-##### What are profiles?
+#### What are profiles?
 
 Profiles provide a convenient way to have multiple separate global configurations. An example use case is having `work` and `personal` profiles, where `work` holds credentials and environment configuration provided by the organization you may work for and `personal` holds configuration for your personal AWS accounts that you use for your side projects.
 
