@@ -28,16 +28,22 @@ First, let's cover the basic workflow.
 
 ### More on configuration
 
+During the first initialization of the config you will be asked to provide a passphrase. It will be used to encrypt the store that will hold all your AWS credentials. To change the encryption passphrase use `aws-auth crypto` command.
+
 ##### What is an "environment configuration"?
 
 An environment configuration is a JSON array holding information about any downstream AWS environments (AWS accounts) that are available for authentication into. For example you may have a `dev` environment with following configuration:
 
 ```
 {
-    "name": "dev",
-    "accountId": "12312312312",
-    "region": "us-east-1",
-    "roles": [ "DEVELOPER", "ADMIN", "READONLY" ]
+    "environments": [
+        {
+            "name": "dev",
+            "accountId": "12312312312",
+            "region": "us-east-1",
+            "roles": [ "DEVELOPER", "ADMIN", "READONLY" ]
+        }
+    ]
 }
 ```
 
