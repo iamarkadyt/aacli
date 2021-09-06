@@ -115,7 +115,12 @@ async function auth() {
         sessionToken: SessionToken,
         expiry: Expiration,
     }
-    sessions.push(newSession)
+    const existingEntryIdx = sessions.findIndex((item) => item.name === newSession.name)
+    if (existingEntryIdx > -1) {
+        sessions.splice(existingEntryIdx, 1, newSession)
+    } else {
+        sessions.push(newSession)
+    }
     cliConfig.sessions = sessions
     await ConfUtils.saveCliConfig(cliConfig, passphrase)
 
