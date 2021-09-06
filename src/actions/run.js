@@ -5,9 +5,15 @@ async function run(argv) {
     const [config, passphrase] = await ConfUtils.loadCliConfig()
     const sessions = Utils.lodashGet(config, 'sessions', [])
     const [command, ...args] = argv
-    const activeSessions = sessions.filter((s) => new Date(s.expiry) > Date.now())
+
+    // make sure command is provided
+    if (!command) {
+        console.log(`Received no command to run. Nothing to do`.yellow)
+        process.exit(0)
+    }
 
     // ditch inactive sessions from CLI config to keep it clean and small
+    const activeSessions = sessions.filter((s) => new Date(s.expiry) > Date.now())
     config.sessions = activeSessions
     await ConfUtils.saveCliConfig(config, passphrase)
 
