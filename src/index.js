@@ -42,7 +42,7 @@ Commands:
     through variable injection which is much more secure than using plain text '~/.aws/credentials'
     file.
 
-Documentation: https://github.com/iamarkadyt/${CLI_NAME}`
+Documentation and support: https://github.com/iamarkadyt/${CLI_NAME}`
 
 function main() {
     const [command, ...args] = process.argv.slice(2)
