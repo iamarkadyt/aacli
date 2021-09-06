@@ -5,7 +5,7 @@ const { globalConfig } = require('../config')
 const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 
 /**
- * CLI 'auth' command handler.
+ * CLI 'login' command handler.
  */
 async function login() {
     const [cliConfig, passphrase] = await ConfUtils.loadCliConfig()

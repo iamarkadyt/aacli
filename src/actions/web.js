@@ -2,7 +2,7 @@ const open = require('open')
 const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 
 /**
- * CLI 'auth' command handler.
+ * CLI 'web' command handler.
  */
 async function web() {
     const [cliConfig] = await ConfUtils.loadCliConfig()

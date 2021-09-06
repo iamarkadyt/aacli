@@ -18,7 +18,7 @@ async function run(argv) {
     await ConfUtils.saveCliConfig(config, passphrase)
 
     if (!activeSessions.length) {
-        console.log(`You have no active sessions, please authenticate first through "auth" command`.red)
+        console.log(`You have no active sessions, please authenticate first through "login" command`.red)
         process.exit(1)
     }
 
