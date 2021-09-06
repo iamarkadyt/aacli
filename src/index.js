@@ -42,6 +42,12 @@ Commands:
     through variable injection which is much more secure than using plain text '~/.aws/credentials'
     file.
 
+  ${`${CLI_NAME} help`.cyan}
+    Use this command to show this help message.
+
+  ${`${CLI_NAME} version`.cyan}
+    Use this command to print the CLI version.
+
 Documentation and support: https://github.com/iamarkadyt/${CLI_NAME}`
 
 function main() {

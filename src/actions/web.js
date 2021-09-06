@@ -49,7 +49,7 @@ async function web() {
     /* open sign-in page in browser */
 
     const webLink = AWSUtils.constructConsoleLink(accountId, role)
-    console.log('Logging in...'.yellow)
+    console.log('Opening sign-in page in your browser...'.yellow)
     console.log('Make sure you are already logged into the HUB account in your browser'.yellow)
     open(webLink)
     console.log('Operation complete'.green)
