@@ -106,18 +106,22 @@ async function auth() {
 
     /* save aws keys to disk */
 
-    const sessionConfig = {
+    const [sessionConfig] = await ConfUtils.loadSessionConfig(passphrase)
+    const sessions = Utils.lodashGet(sessionConfig, 'sessions', [])
+    const newSession = {
+        name: `${profile.name}/${envName}/${role}`,
         region,
         keyId: AccessKeyId,
         key: SecretAccessKey,
         sessionToken: SessionToken,
         expiry: Expiration,
     }
-    const sessionName = `${selection}/${envName}/${role}`
-    ConfUtils.saveSessionConfig({ default: sessionConfig, [sessionName]: sessionConfig }, passphrase)
+    sessions.push(newSession)
+    sessionConfig.sessions = sessions
+    await ConfUtils.saveSessionConfig(sessionConfig, passphrase)
 
     if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').value) {
-        const { credConfig, config } = AWSUtils.constructAwsConfig(sessionConfig)
+        const { credConfig, config } = AWSUtils.constructAwsConfig(newSession)
         fs.writeFileSync(globalConfig.awsCredPath, credConfig)
         fs.writeFileSync(globalConfig.awsConfigPath, config)
     }
