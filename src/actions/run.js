@@ -31,6 +31,7 @@ async function run(argv) {
     })
     const { key, keyId, sessionToken, region } = session
     const env = {
+        ...process.env,
         AWS_ACCESS_KEY_ID: keyId,
         AWS_SECRET_ACCESS_KEY: key,
         AWS_SESSION_TOKEN: sessionToken,
