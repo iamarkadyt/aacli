@@ -127,7 +127,7 @@ $ FEATURE_FLAG=1 aws-auth <command>
 
 `FF_AWS-AUTH_INSECURE_USE_AWS_CREDENTIALS_FILE`
 
-If enabled, temporary AWS credentials are also written to `~/.aws/credentials` file upon authentication into an AWS environment. This provides system-wide access to your AWS requirement for all processes that will ask for it, whether you want it or not, because it's stored in plain text in a location where all AWS SDKs always automatically look into. Which can be useful, but is not recommended. If you enable this, you don't need to use `aws-auth run` command because all binaries using AWS SDKs on your system will automatically obtain access to the AWS environment that you authenticated into.
+If enabled, temporary AWS credentials are also written to `~/.aws/credentials` file upon authentication into an AWS environment. This provides system-wide access to your AWS requirement for all processes that will ask for it, whether you want it or not, because it's stored in plain text in a location where all AWS SDKs always automatically look into. Which can be useful, but is not recommended. If you enable this, you don't need to use `aws-auth run` command because all binaries using AWS SDKs on your system will automatically obtain access to the AWS environment that you authenticate into.
 
 `FF_AWS-AUTH_INSECURE_USE_WEAK_PASSWORDS`
 
@@ -145,6 +145,10 @@ You can fork this repository for yourself or your company and change the name of
 
 #### Metadata servers
 
-This CLI does not support simulating AWS metadata servers because they are inherently insecure. Access to your AWS credentials is provided in plain text to anyone who asks for it. This is even more inferior to storing credentials in plaintext on disk because you can't control even file permissions.
+This CLI does not support simulating AWS metadata servers because they are inherently insecure. Access to your AWS credentials is provided in plain text on `http://169.254.169.254` to anyone who asks for it. This is even more inferior to storing credentials in plain text on disk because you can't control even file permissions.
 
-Instead, we suggest that you set up IAM roles that allow longer sessions, AWS supports ranges of up to 12 hours for non role-chaining role assumption operations. This will keep your credentials secure in the encrypted CLI configuration files, while providing an uninterrupted access to AWS for up to 12 hours, which is the problem that metadata servers were created to solve. During `aws-auth login` you can specify preferred session duration (IAM Role being assumed must allow it in it's settings). Just avoid role-chaining. That is when you assume a role from a role, something that this CLI was not built to support, really. AWS imposes certain limits on role-chaining like restricting certain IAM actions and limiting the session duration to 1 hour maximum. To avoid role-chaining always assume roles from IAM user credentials. This is the default behaviour, you add your HUB account credentials into your CLI configuration, then start to assume IAM roles.
+Instead, we suggest that you set up IAM roles that allow longer sessions, AWS supports ranges of up to 12 hours for non role-chaining role assumption operations. This will keep your credentials secure in the encrypted CLI configuration files, while providing an uninterrupted access to AWS for up to 12 hours, which is the problem that metadata servers were created to solve. During `aws-auth login` you can specify preferred session duration (IAM Role being assumed must allow it in it's settings). Just avoid role-chaining. That is when you assume a role from a role, something that this CLI was not built to support, really. AWS imposes certain limits on role-chaining like restricting certain IAM actions and limiting the session duration to 1 hour maximum. To avoid role-chaining always assume roles from IAM user credentials. This is the default behaviour of this CLI, it asks you for your HUB account IAM user credentials and then they're used to assume IAM roles in same or other AWS accounts.
+
+#### Name of this CLI
+
+This CLI was named `aacli` in versions preceding `v2.0.0` and was renamed to `aws-auth` for better clarity in following versions. 
