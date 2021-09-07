@@ -1,6 +1,6 @@
 {
     "name": "@iamarkadyt/aws-auth",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "AWS authentication CLI with built-in support for MFA, secure credential storage and easy IAM role switching.",
     "scripts": {
         "start": "node bin/cli.js"
