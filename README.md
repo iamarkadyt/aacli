@@ -1,7 +1,3 @@
-# Notice
-
-To everyone who's starred this repo in the last 24 hours, it's been initially called `aacli` but was later renamed to `aws-auth`. I'm currently in the process of updating it on `npm` registry, so right now the installation intstructions below don't work. It's expected to be fixed later today (by evening, CST time). Thank you all for the patience!
-
 # What is this?
 
 This CLI tool allows you to programmatically authenticate into AWS accounts through IAM roles in a multi-account [AWS organization](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md) setup. It supports session management, stores all AWS credentials in an encrypted file and by default only grants AWS access through environment variable injection and subprocessing to avoid storing credentials on disk in plain text.
