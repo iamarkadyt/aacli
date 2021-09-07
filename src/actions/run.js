@@ -1,5 +1,6 @@
 const { spawn } = require('child_process')
 const { ConfUtils, Utils } = require('../helpers')
+const { CLI_NAME } = require('../config')
 
 async function run(argv) {
     const [config, passphrase] = await ConfUtils.loadCliConfig()
@@ -18,7 +19,7 @@ async function run(argv) {
     await ConfUtils.saveCliConfig(config, passphrase)
 
     if (!activeSessions.length) {
-        console.log(`You have no active sessions, please authenticate first through "login" command`.red)
+        console.log(`You have no active sessions, please authenticate first through "${CLI_NAME} login" command`.red)
         process.exit(1)
     }
 
