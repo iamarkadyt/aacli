@@ -1,7 +1,7 @@
 require('colors')
 
 const { Utils } = require('./helpers')
-const { login, run, config, crypto, web, reset, unauth } = require('./actions')
+const { login, run, config, crypto, web, reset, unauth, sesh } = require('./actions')
 const { CLI_NAME, CLI_VERSION } = require('./config')
 
 const helpMessage = `Usage: ${`${CLI_NAME} <command>`.cyan}
@@ -36,6 +36,10 @@ Commands:
   ${`${CLI_NAME} reset`.cyan}
     Use this command to erase all CLI configuration files from disk. It may be useful if you messed
     something up during configuration and want to start from scratch.
+
+  ${`${CLI_NAME} sesh`.cyan}
+    Use this command to list all active or expired sessions. Expired sessions are usually automatically
+    removed when you run other commands that work with sessions. This command always shows all of them.
 
   ${`${CLI_NAME} run -- <cmd>`.cyan}
     Once authenticated, use this command to run other commands with access to AWS. Access is exposed
@@ -74,6 +78,8 @@ function main() {
             return web()
         case 'unauth':
             return unauth()
+        case 'sesh':
+            return sesh()
         case 'crypto':
             return crypto()
         case 'reset':
