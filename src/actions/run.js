@@ -41,7 +41,7 @@ async function run(argv) {
         AWS_DEFAULT_REGION: region,
     }
 
-    spawn(command, args, { stdio: 'inherit', detached: true, shell: true, env })
+    spawn(command, args, { stdio: 'inherit', shell: true, env })
 }
 
 module.exports = { run }
