@@ -99,4 +99,26 @@ function getFeatureFlag(varName) {
     }
 }
 
-module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getFeatureFlag }
+/**
+ * Calculates how much time remains until provided expiry date.
+ *
+ * @param {*} expiry date object or stamp that can be parsed by 'new Date(x)'
+ * @returns time remaining string or 'expired'
+ */
+function timeToExpiry(expiry) {
+    const msToExpiry = new Date(expiry) - Date.now()
+    const seconds = msToExpiry / 1000
+    const minutes = seconds / 60
+    const hours = minutes / 60
+
+    if (hours >= 1) {
+        const result = `${Math.floor(hours)}h`
+        const mins = minutes - Math.floor(hours) * 60
+        return mins > 0 ? `${result} ${Math.floor(mins)}m` : result
+    }
+    if (minutes >= 1) return `${Math.floor(minutes)}m`
+    if (seconds >= 1) return `${Math.floor(seconds)}s`
+    return `expired`
+}
+
+module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getFeatureFlag, timeToExpiry }

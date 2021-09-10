@@ -27,7 +27,10 @@ async function run(argv) {
         type: 'select',
         name: 'session',
         message: 'Choose an active session to use',
-        choices: activeSessions.map((sesh) => ({ title: sesh.name, value: sesh })),
+        choices: activeSessions.map((sesh) => ({
+            title: `${sesh.name} (${Utils.timeToExpiry(sesh.expiry)})`,
+            value: sesh,
+        })),
     })
     const { key, keyId, sessionToken, region } = session
     const env = {
