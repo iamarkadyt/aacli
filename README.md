@@ -88,6 +88,7 @@ Other available commands are:
 
 - `aws-auth reset` -- Deletes CLI configuration files. Might come useful if you decided to erase all configuration to start from scratch.
 - `aws-auth web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
+- `aws-auth sesh` -- Lists all sessions (active and expired) currently located in your encrypted store. Useful to check if you need to re-login soon.
 
 # Project goals
 
