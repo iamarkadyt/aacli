@@ -10,6 +10,8 @@ Here's a usage demo for a quick taste:
 
 Notice how we never have to leave the terminal window or manually manipulate AWS credentials on the computer to switch between AWS accounts. This CLI provides a toolset for convenient and secure way of accessing AWS resources, managing AWS credentials and temporary sessions, and an easy way for rapid switching of roles and environments as needed.
 
+For information on how this tool compares to similar open source projects out there, visit the [FAQ](#faq) section.
+
 # Installation
 
 To install this CLI, run:
@@ -106,6 +108,38 @@ This project aims to provide a secure and efficient alternative solution to both
 All contributions are welcome! And if you have any questions please don't hesitate to reach out and start a thread in the `Discussions` tab up on this page.
 
 For guidelines see [CONTRIBUTING.md](https://github.com/iamarkadyt/aws-auth/blob/master/CONTRIBUTING.md).
+
+# FAQ
+
+### How does it compare with `aws-vault`?
+
+This tool is quite similar in functionality when compared with `aws-vault`. However, here are some important differences:
+
+* Easier interactive interface. This tool does not require you to remember anything except your password. No flags or switches. Just run it and you'll be presented with a set of interactive menus controllable by your keyboard arrow keys. This project puts simplicity of use and user experience at the top of the priority list.
+
+* Easier to contribute. It's written in `javascript`, and is also very lightweight - there are only about a dozen of `.js` files in the project, making it ideal for forking and modifying for your specific needs. With `aws-vault` on the other hand you have to be familiar with `golang` and be willing to spend more time on learning the codebase since it is significantly larger.
+
+* Since this tool is written in just `javascript` it allows you to inspect it's code at any point of time - before or after the installation. The only requirement is knowing `javascript`. This may be a big benefit to you if you're a security conscious person, or you are not familiar with `golang` which is the language that `aws-vault` was written in.
+
+* The `aws-vault` on the other hand is distributed as a binary, and it's not possible to inspect the the distribution for malicious code after it was installed. Your only option is source code, but how do you know that what ended up on your machine is what was built from the sources that you reviewed?
+
+* Since this tool it fairly fresh, it doesn't support common OS keyring integrations like `aws-vault`. But in our opinion keyrings are a terribly insecure way of storing the secrets since they are often kept open throughtout the entire user session on a machine **for convenience**. Having data stored in a simple encrypted file that needs to be decrypted with every operation, like `aws-auth` does it, is far more secure.
+
+### How does it compare with `saml2aws`?
+
+We currently do not integrate with any `Active Directory` products or support `SAML` federations, so if that's what you need you would be better off using `saml2aws`. The `aws-auth` tool is focused on providing an authentication solution for the early stage startups that often cannot afford purchasing any third-party software licenses. And it does so by using the cheapest possible option - built in AWS user and identity management solution - IAM.
+
+We also think that `SAML` is inherently [insecure](https://joonas.fi/2021/08/saml-is-insecure-by-design/).
+
+### Does it integrate with `AWS SSO`?
+
+We currently do not integrate with AWS SSO. We have a neutral opinion on this AWS offering, however, you might be interested in seeing [this post](https://news.ycombinator.com/item?id=29092797):
+
+_AWS SSO has one huge gotcha that makes it nigh impossible to use well (from a security perspective). Instead of using bog-standard IAM roles, AWS SSO reinvents the wheel and asks you to create a "Permission Set". What's the difference between a Permission Set and an IAM role? Whereas with an IAM role, you can attach multiple IAM policies to a single role, with a Permission Set you can only use a single inline policy or AWS managed policies. A single inline policy is nearly impossible to maintain, you reach maximum policy size extremely quickly, and AWS managed policies are a security nightmare with wildcards everywhere._
+
+_And behind the scenes, AWS SSO sets up the exact same SAML infrastructure that is available to you already in IAM, just with roles with unpredictable names (so that it's difficult to programmatically attach policies) with "DONOTDELETE" as part of the name but no actual SCP in place to prevent the role from being deleted. Because it's the same exact SAML infrastructure, but with additional redirects to allow you to login through the AWS SSO start page instead, it's slower compared to setting up SAML access per AWS account directly._
+
+_AWS SSO is a horrible product that actually encourages poor security practice (i.e. AWS managed policies, because a single inline policy is not large enough) and really the only reason why anybody bothers using it is because SAML login from the AWS CLI tooling is not well-supported by AWS._
 
 # License
 
