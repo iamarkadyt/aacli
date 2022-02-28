@@ -72,9 +72,13 @@ async function login() {
     /* authenticate with aws */
 
     console.log(`Authenticating into "${envName}" environment as "${role}"...`.yellow)
+
+    const timestamp = Date.now().toString();
+    const userInfo = `${os.userInfo().username}-${username}-${envName}-${role}`;
+
     const stsParams = {
         RoleArn: roleToAssumeArn,
-        RoleSessionName: `${os.userInfo().username}-${username}-${envName}-${role}-${Date.now()}`,
+        RoleSessionName: `${userInfo.slice(0, 64 - timestamp.length - 1)}-${timestamp}`,
         SerialNumber: AWSUtils.constructMfaArn(HubAccountId, username),
         TokenCode: mfaCode,
         DurationSeconds: duration * 3600,
