@@ -146,7 +146,7 @@ _AWS SSO is a horrible product that actually encourages poor security practice (
 ```
 The MIT License (MIT)
 
-Copyright © 2021, Arkady Titenko
+Copyright © 2022, Arkady Titenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
