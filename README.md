@@ -125,7 +125,7 @@ This tool is quite similar in functionality when compared with `aws-vault`. Howe
 
 * The `aws-vault` on the other hand is distributed as a binary, and it's not possible to inspect the the distribution for malicious code after it was installed. Your only option is source code, but how do you know that what ended up on your machine is what was built from the sources that you reviewed?
 
-* Since this tool it fairly fresh, it doesn't support common OS keyring integrations like `aws-vault`. But in our opinion keyrings are a terribly insecure way of storing the secrets since they are often kept open throughtout the entire user session on a machine **for convenience**. Having data stored in a simple encrypted file that needs to be decrypted with every operation, like `aws-auth` does it, is far more secure.
+* Since this tool is fairly fresh, it doesn't support common OS keyring integrations like `aws-vault`. But in our opinion keyrings are a terribly insecure way of storing the secrets since they are often kept open throughtout the entire user session on a machine **for convenience**. Having data stored in a simple encrypted file that needs to be decrypted with every operation, like `aws-auth` does it, is far more secure.
 
 ### How does it compare with `saml2aws`?
 
