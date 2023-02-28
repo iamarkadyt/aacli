@@ -1,5 +1,15 @@
 [<img src="https://badge.fury.io/js/@iamarkadyt%2Faws-auth.svg" alt="" />](https://www.npmjs.com/package/@iamarkadyt/aws-auth)
 
+# Table of contents
+
+1. [What is this?](#what-is-this)
+2. [Installation](#installation)
+3. [Usage](#usage)
+4. [Project goals](#project-goals)
+5. [Contributing](#contributing)
+6. [FAQ](#faq)
+6. [License](#license)
+
 # What is this?
 
 This CLI tool allows you to programmatically authenticate into AWS accounts through IAM roles in a multi-account [AWS organization](https://github.com/iamarkadyt/aws-auth/blob/master/DEVOPS.md) setup. It supports session management, stores all AWS credentials in an encrypted file and by default only grants AWS access through environment variable injection and subprocessing to avoid storing credentials on disk in plain text.
