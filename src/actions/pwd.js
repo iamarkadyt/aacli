@@ -18,9 +18,6 @@ async function pwd() {
 
     const choices = []
     if (isEncrypted) {
-        if (Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
-            choices.push({ title: 'Decrypt configuration files', value: Action.DECRYPT_CONFIGS })
-        }
         choices.push({ title: 'Change encryption passphrase', value: Action.CHANGE_PASSCODE })
     } else {
         choices.push({ title: 'Encrypt configuration files', value: Action.ENCRYPT_CONFIGS })

@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 const _prompts = require('prompts')
-const { CLI_NAME_UPPER } = require('../config')
 
 /**
  * Very thin wrapper around the prompts library. Adds:
@@ -86,20 +85,6 @@ function isObject(val) {
 }
 
 /**
- * Fetch var from system environment.
- *
- * @param {*} varName name of the var to get from environment
- * @returns var
- */
-function getFeatureFlag(varName) {
-    const name = `FF_${CLI_NAME_UPPER}_${varName}`
-    return {
-        name,
-        value: process.env[name],
-    }
-}
-
-/**
  * Calculates how much time remains until provided expiry date.
  *
  * @param {*} expiry date object or stamp that can be parsed by 'new Date(x)'
@@ -121,4 +106,4 @@ function timeToExpiry(expiry) {
     return `expired`
 }
 
-module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, getFeatureFlag, timeToExpiry }
+module.exports = { prompts, lodashGet, sleepSeconds, genHash, isObject, timeToExpiry }

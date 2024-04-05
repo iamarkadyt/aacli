@@ -1,7 +1,5 @@
 const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts');
 const os = require('os')
-const fs = require('fs')
-const { globalConfig } = require('../config')
 const { AWSUtils, ConfUtils, Utils } = require('../helpers')
 
 /**
@@ -124,12 +122,6 @@ async function login() {
     }
     cliConfig.sessions = sessions
     await ConfUtils.saveCliConfig(cliConfig, passphrase)
-
-    if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').value) {
-        const { credConfig, config } = AWSUtils.constructAwsConfig(newSession)
-        fs.writeFileSync(globalConfig.awsCredPath, credConfig)
-        fs.writeFileSync(globalConfig.awsConfigPath, config)
-    }
 
     console.log('Authentication successful'.green)
 }

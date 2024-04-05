@@ -16,9 +16,6 @@ async function reset() {
         if (fs.existsSync(globalConfig.cliConfigPath)) {
             fs.unlinkSync(globalConfig.cliConfigPath)
         }
-        if (fs.existsSync(globalConfig.cliInputFiles.json)) {
-            fs.unlinkSync(globalConfig.cliInputFiles.json)
-        }
         console.log('CLI configuration files were deleted'.green)
     }
 }

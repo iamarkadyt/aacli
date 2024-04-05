@@ -1,6 +1,5 @@
 require('colors')
 
-const { Utils } = require('./helpers')
 const { login, run, config, pwd, web, reset, logout, list } = require('./actions')
 const { CLI_NAME, CLI_VERSION } = require('./config')
 
@@ -17,13 +16,7 @@ Commands:
 
   ${`${CLI_NAME} login`.cyan}
     Use this command to authenticate into an AWS environment under a selected role for programmatic
-    access. By default this only enables granting access to AWS through the '${CLI_NAME} run' command
-    (see below).
-
-    If you want to provide system-wide access to AWS you'll have to use '~/.aws/credentials' file
-    which is insecure as credential information is stored in plain text. To enable this behaviour
-    regardless, add the '${Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').name}=1' environment variable into
-    your shell environment.
+    access. Note: this only enables access to AWS through the '${CLI_NAME} run' command.
     
   ${`${CLI_NAME} logout`.cyan}
     Use this command to delete any previously written temporary AWS credentials from disk. This may

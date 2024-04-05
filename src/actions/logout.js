@@ -1,5 +1,3 @@
-const fs = require('fs')
-const { globalConfig } = require('../config')
 const { Utils, ConfUtils } = require('../helpers')
 
 async function logout() {
@@ -13,11 +11,6 @@ async function logout() {
     })
 
     if (hasConfirmed) {
-        if (Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').value) {
-            if (fs.existsSync(globalConfig.awsCredPath)) {
-                fs.unlinkSync(globalConfig.awsCredPath)
-            }
-        }
         const [config, passphrase] = await ConfUtils.loadCliConfig()
         if (Object.keys(config).length) {
             config.sessions = []

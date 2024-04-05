@@ -128,28 +128,6 @@ Other available commands are:
 
 Contributions are welcome. See [CONTRIBUTING.md](https://github.com/iamarkadyt/aws-auth/blob/master/CONTRIBUTING.md).
 
-# Advanced
-
-You can modify certain behaviors by setting below flags in your environment. To enable a feature flag add the following to your `~/.bashrc`:
-```
-export FEATURE_FLAG=1
-```
-
-Or run `aws-auth` like this:
-```
-$ FEATURE_FLAG=1 aws-auth <command>
-```
-
-`FF_AWS-AUTH_INSECURE_USE_AWS_CREDENTIALS_FILE`
-
-If enabled, temporary AWS credentials are also written to `~/.aws/credentials` file upon authentication into an AWS environment. This provides system-wide access to your AWS requirement for all processes that will ask for it, whether you want it or not, because it's stored in plain text in a location where all AWS SDKs always automatically look into. Which can be useful, but is not recommended. If you enable this, you don't need to use `aws-auth run` command because all binaries using AWS SDKs on your system will automatically obtain access to the AWS environment that you authenticate into.
-
-`FF_AWS-AUTH_INSECURE_DISABLE_ENCRYPTION`
-
-All AWS credentials are stored in the CLI configuration files on disk which is encrypted by default. Passphrase can be changed with `aws-auth pwd` command. However this command can also used to disable encryption entirely. If feature flag above is enabled, a few secret options appear in the `aws-auth pwd` command output that allow to decrypt the configuration files.
-
-When a configuration file is encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication. When it's decrypted, passphrase is not asked for any operations. But with that your AWS credentials, both temporary and permanent, are stored in plain text on disk in `~/.aws-auth` directory.
-
 # License
 
 ```

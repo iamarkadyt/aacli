@@ -3,15 +3,11 @@ const path = require('path')
 
 /* eslint-disable import/newline-after-import */
 const CLI_NAME = require('../package.json').name.split('/').pop()
-const CLI_NAME_UPPER = CLI_NAME.toUpperCase()
 const CLI_VERSION = require('../package.json').version
 
 const globalConfig = {
     cliDir: path.join(os.homedir(), `.${CLI_NAME}`),
     cliConfigPath: path.join(os.homedir(), `.${CLI_NAME}`, 'config.json'),
-    cliInputFiles: {
-        json: path.join(os.homedir(), `.${CLI_NAME}`, 'input.json'),
-    },
     awsCredPath: path.join(os.homedir(), '.aws/credentials'),
     awsConfigPath: path.join(os.homedir(), '.aws/config'),
 }

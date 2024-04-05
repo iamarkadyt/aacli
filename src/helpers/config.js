@@ -195,13 +195,12 @@ async function loadConfig(path, passcode) {
         return [decryptedConfig, passphrase]
     }
 
+    // in case somehow config did not end up being encrypted
     let passphrase
-    if (!Utils.getFeatureFlag(`INSECURE_DISABLE_ENCRYPTION`).value) {
-        console.log('Your configuration files are not encrypted'.yellow)
-        passphrase = await getNewEncryptionKey()
-        const encrypted = encryptConfig(config, passphrase)
-        saveConfigAsIs(path, encrypted)
-    }
+    console.log('Your configuration files are not encrypted'.yellow)
+    passphrase = await getNewEncryptionKey()
+    const encrypted = encryptConfig(config, passphrase)
+    saveConfigAsIs(path, encrypted)
 
     return [config, passphrase]
 }
