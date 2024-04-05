@@ -56,7 +56,6 @@ async function getNewEncryptionKey() {
     while (isFailing) {
         newSecretKey = await getEncryptionKey({
             message: 'Enter new passphrase',
-            validate: (input) => CryptoUtils.isSafePassword(input),
         })
         newSecretKeyConfirm = await getEncryptionKey({ message: 'Enter new passphrase again' })
 

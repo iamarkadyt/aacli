@@ -33,7 +33,12 @@ async function login() {
         process.exit(1)
     }
 
-    AWS.config.update(profile.awsCredentials)
+    AWS.config.update({
+        credentials: {
+            accessKeyId: profile.awsCredentials.accessKeyId,
+            secretAccessKey: profile.awsCredentials.secretAccessKey,
+        },
+    })
     const STS = new AWS.STS()
 
     /* gather auth parameters (env, role, mfa code, etc.) */
@@ -79,7 +84,7 @@ async function login() {
     const stsParams = {
         RoleArn: roleToAssumeArn,
         RoleSessionName: `${userInfo.slice(0, 64 - timestamp.length - 1)}-${timestamp}`,
-        SerialNumber: AWSUtils.constructMfaArn(HubAccountId, username),
+        SerialNumber: profile.awsCredentials.mfaArn,
         TokenCode: mfaCode,
         DurationSeconds: duration * 3600,
     }

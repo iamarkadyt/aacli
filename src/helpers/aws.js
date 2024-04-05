@@ -6,10 +6,6 @@ function constructRoleArn(account, roleName) {
     return `arn:aws:iam::${account}:role/${roleName}`
 }
 
-function constructMfaArn(account, username) {
-    return `arn:aws:iam::${account}:mfa/${username}`
-}
-
 /**
  * @param {*} sessionToken (optional) when assuming roles, AWS provides you with one more key -- session token
  * @returns object containing `~/.aws/credentials` config and `~/.aws/config` strings ready for fs write
@@ -28,6 +24,5 @@ function constructAwsConfig({ region, keyId, key, sessionToken }) {
 module.exports = {
     constructConsoleLink,
     constructRoleArn,
-    constructMfaArn,
     constructAwsConfig,
 }

@@ -4,16 +4,18 @@ const { ConfUtils, Utils, SchemaUtils } = require('../helpers')
 const { globalConfig } = require('../config')
 
 const Action = Object.freeze({
-    CREATE_NEW: Symbol('CREATE_NEW'),
-    DELETE_ONE: Symbol('DELETE_ONE'),
+    CREATE_ID: Symbol('CREATE_ID'),
+    DELETE_ID: Symbol('DELETE_ID'),
+    CREATE_PROFILE: Symbol('CREATE_PROFILE'),
+    DELETE_PROFILE: Symbol('DELETE_PROFILE'),
     EXIT_CLI: Symbol('EXIT_CLI'),
 })
 
 /**
- * Asks user to provide AWS configuration: region, secret key and key id.
+ * Asks user to provide AWS configuration: region, secret key and key id
  *
  * @param {*} profile (optional) profile to lookup existing configuration from
- * @returns aws configuration, as user provides it
+ * @returns aws configuration
  */
 async function getAwsConfig(profile = {}) {
     const { accessKeyId } = await Utils.prompts({
@@ -28,64 +30,45 @@ async function getAwsConfig(profile = {}) {
         message: 'Enter your AWS_SECRET_ACCESS_KEY',
         initial: Utils.lodashGet(profile, `awsCredentials.secretAccessKey`),
     })
+    const { mfaArn } = await Utils.prompts({
+        type: 'text',
+        name: 'mfaArn',
+        message: 'Enter your MFA device ARN',
+        initial: Utils.lodashGet(profile, `awsCredentials.mfaArn`),
+    })
 
-    return { accessKeyId, secretAccessKey }
+    return { accessKeyId, secretAccessKey, mfaArn }
 }
 
 /**
- * Asks user to provide dowstream enviornment configuration (region, accountId, name etc.)
- * in JSON format.
- *
- * @param {*} profile (optional) profile to lookup existing configuration from
- * @returns environments configuration, as user provides it, otherwise null
+ * Asks user to provide configuration details for a new identity
  */
-async function getEnvironments(profile = {}) {
-    let result = null
-    const existing = Utils.lodashGet(profile, `environments`, [])
-
-    const { editNow } = await Utils.prompts({
-        type: 'confirm',
-        name: 'editNow',
-        message: `${existing.length ? 'Edit' : 'Set up'} AWS environment configuration?`,
+async function getNewIdentity() {
+    const { accountName } = await Utils.prompts({
+        type: 'text',
+        name: 'accountName',
+        message: 'AWS account label: (dev, stage, prod, etc)',
+        initial: 'dev',
+    })
+    const { accountId } = await Utils.prompts({
+        type: 'text',
+        name: 'accountId',
+        message: 'AWS account id:',
+    })
+    const { accountRegion } = await Utils.prompts({
+        type: 'text',
+        name: 'accountRegion',
+        message: 'Primary region used in that account?',
+        initial: 'us-east-1',
+    })
+    const { iamRoleName } = await Utils.prompts({
+        type: 'text',
+        name: 'iamRoleName',
+        message: 'IAM role name:',
+        initial: 'DEVELOPER',
     })
 
-    if (editNow) {
-        // create the file and open for edit
-        const starter = { environments: existing }
-        fs.writeFileSync(globalConfig.cliInputFiles.json, JSON.stringify(starter, null, 4), { flag: 'w' })
-
-        let passingConfig = false
-        while (!passingConfig) {
-            await open(globalConfig.cliInputFiles.json)
-
-            // setup manual return listener
-            await Utils.prompts({
-                type: 'invisible',
-                name: 'hasReturned',
-                message: ["Press ENTER when you've finished editing the file TO CONTINUE"],
-            })
-
-            // parse input
-            try {
-                const userInput = JSON.parse(fs.readFileSync(globalConfig.cliInputFiles.json))
-                SchemaUtils.validate(userInput, SchemaUtils.schemas.environments)
-                passingConfig = true
-                result = userInput.environments
-            } catch (error) {
-                if (error.name === 'SyntaxError' || error.name === 'ValidationError') {
-                    console.log(`Bad JSON structure: ${error.message}`.red)
-                    console.log('Please check out examples in documentation and try again'.red)
-                } else {
-                    throw error
-                }
-            }
-        }
-        // cleanup for security
-        const content = { environments: [] }
-        fs.writeFileSync(globalConfig.cliInputFiles.json, JSON.stringify(content, null, 4), { flag: 'w' })
-    }
-
-    return result
+    return { accountName, accountId, accountRegion, iamRoleName }
 }
 
 /**
@@ -97,10 +80,15 @@ async function config(actionConfig) {
 
     /* build the menu */
 
-    const choices = [{ title: 'Create new profile', value: Action.CREATE_NEW }]
+    const choices = [{ title: 'Create new profile', value: Action.CREATE_PROFILE }]
     if (profiles.length) {
-        choices.push({ title: 'Delete a profile', value: Action.DELETE_ONE })
+        choices.push({ title: 'Delete a profile', value: Action.DELETE_PROFILE })
         choices.push(...profiles.map((p, i) => ({ title: `Configure profile: ${p.name}`, value: i })))
+        choices.push({ title: 'Add a new identity', value: Action.CREATE_ID })
+    }
+
+    if (profiles.some(profile => Array.isArray(profile.identities) && profile.identities.length > 0)) {
+        choices.push({ title: 'Delete an identity', value: Action.DELETE_ID })
     }
     choices.push({ title: 'Exit this CLI', value: Action.EXIT_CLI })
     const { selection } = await Utils.prompts({
@@ -116,9 +104,9 @@ async function config(actionConfig) {
         process.exit(0)
     }
 
-    /* handle delete action */
+    /* handle delete actions */
 
-    if (selection === Action.DELETE_ONE) {
+    if (selection === Action.DELETE_PROFILE) {
         const { toDelete } = await Utils.prompts({
             type: 'select',
             name: 'toDelete',
@@ -135,14 +123,75 @@ async function config(actionConfig) {
             cliConfig.profiles = profiles
             await ConfUtils.saveCliConfig(cliConfig, passphrase)
             console.log('Profile was successfully deleted'.green)
+            console.log()
         }
         return
     }
 
-    /* handle create or edit actions */
+    if (selection === Action.DELETE_ID) {
+        const choices = profiles.reduce((acc, profile) => {
+            if (Array.isArray(profile.identities) && profile.identities.length) {
+                profile.identities.forEach(identity => acc.push(`${profile.name}/${identity.accountName}/${identity.iamRoleName}`))
+            }
+            return acc;
+        }, [])
+        const { toDelete } = await Utils.prompts({
+            type: 'select',
+            name: 'toDelete',
+            message: 'Select an identity to delete',
+            choices,
+        })
+        const { hasConfirmed } = await Utils.prompts({
+            type: 'confirm',
+            name: 'hasConfirmed',
+            message: `Are you sure? This action is irreversible`,
+        })
+        if (hasConfirmed) {
+            const [profileName, idAccName, idRoleName] = choices[toDelete].split('/')
+            profiles.forEach(profile => {
+                if (profile.name === profileName) {
+                    profile.identities = profile.identities.filter(identity => {
+                        return identity.accountName !== idAccName && identity.iamRoleName !== idRoleName
+                    });
+                }
+            });
+
+            cliConfig.profiles = profiles
+            await ConfUtils.saveCliConfig(cliConfig, passphrase)
+            console.log('Identity was successfully deleted'.green)
+            console.log()
+        }
+        return
+    }
+
+    /* handle create identity actions */
+
+    if (selection === Action.CREATE_ID) {
+        const { profileName } = await Utils.prompts({
+            type: 'select',
+            name: 'profileName',
+            message: 'Select a profile to add new identity to',
+            choices: profiles.map((p, i) => ({ title: p.name, value: i })),
+        })
+        const identity = await getNewIdentity()
+        if (Array.isArray(profiles[profileName].identities)) {
+            profiles[profileName].identities.push(identity)
+        } else {
+            profiles[profileName].identities = [identity]
+        }
+
+        cliConfig.profiles = profiles
+        await ConfUtils.saveCliConfig(cliConfig, passphrase)
+        console.log('Identity was successfully created'.green)
+        console.log()
+
+        return
+    }
+
+    /* handle create or edit profile actions */
 
     let profile
-    if (selection === Action.CREATE_NEW) {
+    if (selection === Action.CREATE_PROFILE) {
         const { profileName } = await Utils.prompts({
             type: 'text',
             name: 'profileName',
@@ -160,14 +209,15 @@ async function config(actionConfig) {
     const awsCredentials = await getAwsConfig(profile)
     profile.awsCredentials = awsCredentials
 
-    const environments = await getEnvironments(profile)
-    profile.environments = environments || []
-
     cliConfig.profiles = profiles
     await ConfUtils.saveCliConfig(cliConfig, passphrase)
 
-    if (selection === Action.CREATE_NEW) {
+    if (selection === Action.CREATE_PROFILE) {
         console.log('Profile was successfully created'.green)
+        console.log()
+    } else {
+        console.log('Profile was successfully edited'.green)
+        console.log()
     }
 }
 

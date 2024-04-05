@@ -4,27 +4,6 @@ const Utils = require('./other')
 const ALGORITHM = 'aes-256-ctr'
 
 /**
- * Checks strength of the password
- *
- * @param {*} passphrase password to test
- * @returns true if password is strong, error message otherwise
- */
-function isSafePassword(passphrase) {
-    // https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
-    // below is a series of positive lookaheads (?=.*...) checking for different rules; modify as needed
-    const strongRegex = new RegExp('^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{12,})')
-    const weakRegex = new RegExp('^(?=.{8,})')
-
-    if (Utils.getFeatureFlag('INSECURE_USE_WEAK_PASSWORDS').value) {
-        return weakRegex.test(passphrase) || 'At least 8 characters are required'
-    }
-    return (
-        strongRegex.test(passphrase) ||
-        'At least 12 characters, one uppercase, one lowercase, one numeric and one special character !@#$%^&*'
-    )
-}
-
-/**
  * Depending on algorithm, encryption key must be of certain length. Which means we can't directly pass user passcodes
  * into the encryption engine. We need to hash those passwords, meaning turn them into a reproducibly built hash string.
  *
@@ -66,4 +45,4 @@ function decryptString(hash, secretKey) {
     return decrpyted.toString()
 }
 
-module.exports = { isSafePassword, hashPassword, encryptString, decryptString }
+module.exports = { hashPassword, encryptString, decryptString }
