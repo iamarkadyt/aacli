@@ -1,7 +1,7 @@
 require('colors')
 
 const { Utils } = require('./helpers')
-const { login, run, config, crypto, web, reset, unauth, sesh } = require('./actions')
+const { login, run, config, pwd, web, reset, logout, list } = require('./actions')
 const { CLI_NAME, CLI_VERSION } = require('./config')
 
 const helpMessage = `Usage: ${`${CLI_NAME} <command>`.cyan}
@@ -25,11 +25,11 @@ Commands:
     Use this command to authenticate into an AWS environment under a selected role in your browser.
     To use this command make sure you are logged into the HUB account in your browser first.  
 
-  ${`${CLI_NAME} unauth`.cyan}
+  ${`${CLI_NAME} logout`.cyan}
     Use this command to delete any previously written temporary AWS credentials from disk. This may
     be used as a security practice to leave no credentials behind after you're done with your work.
 
-  ${`${CLI_NAME} crypto`.cyan}
+  ${`${CLI_NAME} pwd`.cyan}
     Use this command to manage the encryption passphrase that protects configuration files that store
     your AWS credential information.
 
@@ -37,7 +37,7 @@ Commands:
     Use this command to erase all CLI configuration files from disk. It may be useful if you messed
     something up during configuration and want to start from scratch.
 
-  ${`${CLI_NAME} sesh`.cyan}
+  ${`${CLI_NAME} list`.cyan}
     Use this command to list all active or expired sessions. Expired sessions are usually automatically
     removed when you run other commands that work with sessions. This command always shows all of them.
 
@@ -76,12 +76,12 @@ function main() {
             return login()
         case 'web':
             return web()
-        case 'unauth':
-            return unauth()
-        case 'sesh':
-            return sesh()
-        case 'crypto':
-            return crypto()
+        case 'logout':
+            return logout()
+        case 'list':
+            return list()
+        case 'pwd':
+            return pwd()
         case 'reset':
             return reset()
         case 'run':

@@ -135,7 +135,7 @@ If enabled, reduces the password requirements to just 8 characters. No special c
 
 `FF_AWS-AUTH_INSECURE_DISABLE_ENCRYPTION`
 
-All AWS credentials are stored in the CLI configuration files on disk which is encrypted by default. Passphrase can be changed with `aws-auth crypto` command. However this command can also used to disable encryption entirely. If feature flag above is enabled, a few secret options appear in the `aws-auth crypto` command output that allow to decrypt the configuration files.
+All AWS credentials are stored in the CLI configuration files on disk which is encrypted by default. Passphrase can be changed with `aws-auth pwd` command. However this command can also used to disable encryption entirely. If feature flag above is enabled, a few secret options appear in the `aws-auth pwd` command output that allow to decrypt the configuration files.
 
 When a configuration file is encrypted, a user is required to provide a passphrase before performing any manipulations to the CLI config or performing a downstream authentication. When it's decrypted, passphrase is not asked for any operations. But with that your AWS credentials, both temporary and permanent, are stored in plain text on disk in `~/.aws-auth` directory.
 

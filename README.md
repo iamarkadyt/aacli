@@ -42,7 +42,7 @@ First, let's cover the basic workflow.
 
 ### More on configuration
 
-During the first initialization of the config you will be asked to provide a passphrase. It will be used to encrypt the store that will hold all your AWS credentials. To change the encryption passphrase use `aws-auth crypto` command.
+During the first initialization of the config you will be asked to provide a passphrase. It will be used to encrypt the store that will hold all your AWS credentials. To change the encryption passphrase use `aws-auth pwd` command.
 
 #### What is an "environment configuration"?
 
@@ -82,7 +82,7 @@ Profiles provide a convenient way to have multiple separate global configuration
 
 ### More on authentication
 
-Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. Successful authentication creates an active session that is securely stored in CLI configuration files. You can have multiple active sessions at the same time, and you can also use `aws-auth unauth` command to revoke them all (erases all temporary AWS credentials from disk).
+Once the configuration file is created you can start authenticating into downstream AWS environments through `aws-auth login` command. Successful authentication creates an active session that is securely stored in CLI configuration files. You can have multiple active sessions at the same time, and you can also use `aws-auth logout` command to revoke them all (erases all temporary AWS credentials from disk).
 
 An existing active session can be used with `aws-auth run` command to execute a subcommand under a specified IAM role. Sessions have names that follow pattern of `profile/environment/role`. When you run `aws-auth run` command it presents a list of all existing active sessions that you can choose from to use for the provided subcommand. Run command signature is `aws-auth run -- <subcommand>`, an example invocation is `aws-auth run -- aws s3 ls`. Run command injects credentials into the subcommand passed after `--` sign through environment variables. Here's a full list of variables injected:
 ```
@@ -102,7 +102,7 @@ Other available commands are:
 
 - `aws-auth reset` -- Deletes CLI configuration files. Might come useful if you decided to erase all configuration to start from scratch.
 - `aws-auth web` -- Opens up a browser tab to authenticate you into the selected AWS environment in AWS web console.
-- `aws-auth sesh` -- Lists all sessions (active and expired) currently located in your encrypted store. Useful to check if you need to re-login soon.
+- `aws-auth list` -- Lists all sessions (active and expired) currently located in your encrypted store. Useful to check if you need to re-login soon.
 
 # Project goals
 

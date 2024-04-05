@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Utils = require('./other')
-const CryptoUtils = require('./crypto')
+const CryptoUtils = require('./pwd')
 const { globalConfig } = require('../config')
 
 /**

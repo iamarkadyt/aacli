@@ -8,9 +8,9 @@ const Action = Object.freeze({
 })
 
 /**
- * CLI 'crypto' command handler.
+ * CLI 'pwd' command handler.
  */
-async function crypto() {
+async function pwd() {
     const cliConfig = ConfUtils.loadConfigAsIs(globalConfig.cliConfigPath)
     const isEncrypted = ConfUtils.isEncrypted(cliConfig)
 
@@ -59,4 +59,4 @@ async function crypto() {
     console.log('Operation successful'.green)
 }
 
-module.exports = { crypto }
+module.exports = { pwd }

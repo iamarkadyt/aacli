@@ -2,7 +2,7 @@ const fs = require('fs')
 const { globalConfig } = require('../config')
 const { Utils, ConfUtils } = require('../helpers')
 
-async function unauth() {
+async function logout() {
     const { hasConfirmed } = await Utils.prompts({
         type: 'toggle',
         message: "Are you sure? You'll have to re-authenticate to continue using AWS",
@@ -27,4 +27,4 @@ async function unauth() {
     }
 }
 
-module.exports = { unauth }
+module.exports = { logout }
