@@ -1,7 +1,4 @@
-const fs = require('fs')
-const open = require('open')
-const { ConfUtils, Utils, SchemaUtils } = require('../helpers')
-const { globalConfig } = require('../config')
+const { ConfUtils, Utils } = require('../helpers')
 
 const Action = Object.freeze({
     CREATE_ID: Symbol('CREATE_ID'),
@@ -25,7 +22,7 @@ async function getAwsConfig(profile = {}) {
         initial: Utils.lodashGet(profile, `awsCredentials.accessKeyId`),
     })
     const { secretAccessKey } = await Utils.prompts({
-        type: 'text',
+        type: 'password',
         name: 'secretAccessKey',
         message: 'Enter your AWS_SECRET_ACCESS_KEY',
         initial: Utils.lodashGet(profile, `awsCredentials.secretAccessKey`),

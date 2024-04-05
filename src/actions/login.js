@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk')
+const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts');
 const os = require('os')
 const fs = require('fs')
 const { globalConfig } = require('../config')
@@ -21,57 +21,41 @@ async function login() {
     const { selection } = await Utils.prompts({
         type: 'select',
         name: 'selection',
-        message: '(1/5) Select a profile to use',
+        message: 'Select a profile to use',
         choices: profiles.map((p, i) => ({ title: p.name, value: i })),
     })
 
     const profile = cliConfig.profiles[selection]
-    const { environments } = profile
+    const { identities } = profile
 
-    if (!environments.length) {
-        console.log(`This profile has no saved environments, use "config" command to add one`.red)
+    if (!identities.length || !Array.isArray(identities)) {
+        console.log(`This profile has no saved identities, use "config" command to add one`.red)
         process.exit(1)
     }
 
-    AWS.config.update({
-        credentials: {
-            accessKeyId: profile.awsCredentials.accessKeyId,
-            secretAccessKey: profile.awsCredentials.secretAccessKey,
-        },
-    })
-    const STS = new AWS.STS()
-
     /* gather auth parameters (env, role, mfa code, etc.) */
 
-    const { environment } = await Utils.prompts({
+    const { identity } = await Utils.prompts({
         type: 'select',
-        name: 'environment',
-        message: '(2/5) Choose an environment to log into',
-        choices: environments.map((env) => ({ title: env.name, value: env })),
-    })
-    const { role } = await Utils.prompts({
-        type: 'select',
-        name: 'role',
-        message: '(3/5) Choose an IAM role to use',
-        choices: environment.roles.map((name) => ({ title: name, value: name })),
+        name: 'identity',
+        message: 'Choose an identity to log in under',
+        choices: identities.map((id) => ({ title: `${id.accountName}/${id.iamRoleName}`, value: id })),
     })
     const { duration } = await Utils.prompts({
         type: 'number',
         name: 'duration',
-        message: '(4/5) Specify session duration (in hours, 1-12)',
+        message: 'Specify session duration (in hours, 1-12)',
         initial: 1,
         min: 1,
         max: 12,
     })
-    const { name: envName, accountId, region } = environment
+    const { accountName: envName, accountId, accountRegion: region, iamRoleName: role } = identity
     const roleToAssumeArn = AWSUtils.constructRoleArn(accountId, role)
-
-    const { Account: HubAccountId, Arn: UserArn } = await STS.getCallerIdentity().promise()
-    const username = UserArn.split('/').pop()
     const { mfaCode } = await Utils.prompts({
         type: 'text',
         name: 'mfaCode',
-        message: '(5/5) Enter your MFA code',
+        message: 'Enter your MFA code',
+        validate: value => value < 6 ? `Token must be at least 6 characters long` : true,
     })
 
     /* authenticate with aws */
@@ -79,8 +63,15 @@ async function login() {
     console.log(`Authenticating into "${envName}" environment as "${role}"...`.yellow)
 
     const timestamp = Date.now().toString();
-    const userInfo = `${os.userInfo().username}-${username}-${envName}-${role}`;
+    const userInfo = `${os.userInfo().username}-${envName}-${role}`;
 
+    const stsClient = new STSClient({
+        region: identity.accountRegion,
+        credentials: {
+            accessKeyId: profile.awsCredentials.accessKeyId,
+            secretAccessKey: profile.awsCredentials.secretAccessKey,
+        },
+    });
     const stsParams = {
         RoleArn: roleToAssumeArn,
         RoleSessionName: `${userInfo.slice(0, 64 - timestamp.length - 1)}-${timestamp}`,
@@ -91,7 +82,8 @@ async function login() {
 
     let Credentials = null
     try {
-        ;({ Credentials } = await STS.assumeRole(stsParams).promise())
+        const command = new AssumeRoleCommand(stsParams)
+        ;({ Credentials } = await stsClient.send(command))
     } catch (error) {
         if (error.message.includes('Duration')) {
             console.log(`Specified session duration exceeds the maximum allowed limit set on the '${role}' role`.red)

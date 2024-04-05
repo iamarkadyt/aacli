@@ -1,5 +1,4 @@
 const crypto = require('crypto')
-const Utils = require('./other')
 
 const ALGORITHM = 'aes-256-ctr'
 
