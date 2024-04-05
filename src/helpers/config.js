@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Utils = require('./other')
-const CryptoUtils = require('./pwd')
+const CryptoUtils = require('./crypto')
 const { globalConfig } = require('../config')
 
 /**
@@ -150,7 +150,7 @@ function loadConfigAsIs(pathname) {
     let config = {}
     try {
         config = JSON.parse(fs.readFileSync(pathname))
-    } catch {}
+    } catch { }
     return config
 }
 

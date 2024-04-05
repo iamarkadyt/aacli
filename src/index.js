@@ -10,6 +10,10 @@ Commands:
   ${`${CLI_NAME} config`.cyan}
     Use this command to configure this CLI with your HUB account credentials to enable authentication
     into downstream AWS accounts.
+    
+  ${`${CLI_NAME} web`.cyan}
+      Use this command to authenticate into an AWS environment under a selected role in your browser.
+      To use this command make sure you are logged into the HUB account in your browser first.  
 
   ${`${CLI_NAME} login`.cyan}
     Use this command to authenticate into an AWS environment under a selected role for programmatic
@@ -20,31 +24,27 @@ Commands:
     which is insecure as credential information is stored in plain text. To enable this behaviour
     regardless, add the '${Utils.getFeatureFlag('INSECURE_USE_AWS_CREDENTIALS_FILE').name}=1' environment variable into
     your shell environment.
-
-  ${`${CLI_NAME} web`.cyan}
-    Use this command to authenticate into an AWS environment under a selected role in your browser.
-    To use this command make sure you are logged into the HUB account in your browser first.  
-
+    
   ${`${CLI_NAME} logout`.cyan}
     Use this command to delete any previously written temporary AWS credentials from disk. This may
     be used as a security practice to leave no credentials behind after you're done with your work.
+    
+  ${`${CLI_NAME} list`.cyan}
+    Use this command to list all active or expired sessions. Expired sessions are usually automatically
+    removed when you run other commands that work with sessions. This command always shows all of them.
 
   ${`${CLI_NAME} pwd`.cyan}
     Use this command to manage the encryption passphrase that protects configuration files that store
     your AWS credential information.
 
-  ${`${CLI_NAME} reset`.cyan}
-    Use this command to erase all CLI configuration files from disk. It may be useful if you messed
-    something up during configuration and want to start from scratch.
-
-  ${`${CLI_NAME} list`.cyan}
-    Use this command to list all active or expired sessions. Expired sessions are usually automatically
-    removed when you run other commands that work with sessions. This command always shows all of them.
-
   ${`${CLI_NAME} run -- <cmd>`.cyan}
     Once authenticated, use this command to run other commands with access to AWS. Access is exposed
     through variable injection which is much more secure than using plain text '~/.aws/credentials'
     file.
+
+  ${`${CLI_NAME} reset`.cyan}
+    Use this command to erase all CLI configuration files from disk. It may be useful if you messed
+    something up during configuration and want to start from scratch.
 
   ${`${CLI_NAME} help`.cyan}
     Use this command to show this help message.
