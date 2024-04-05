@@ -12,4 +12,4 @@ const globalConfig = {
     awsConfigPath: path.join(os.homedir(), '.aws/config'),
 }
 
-module.exports = { globalConfig, CLI_NAME, CLI_NAME_UPPER, CLI_VERSION }
+module.exports = { globalConfig, CLI_NAME, CLI_VERSION }

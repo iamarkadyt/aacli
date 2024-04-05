@@ -9,5 +9,4 @@ function constructRoleArn(account, roleName) {
 module.exports = {
     constructConsoleLink,
     constructRoleArn,
-    constructAwsConfig,
 }
