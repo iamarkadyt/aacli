@@ -13,9 +13,9 @@
 
 Simple NodeJS CLI for authenticating with AWS using IAM roles and MFA.
 
-It can cache multiple simultaneous sessions, storing all AWS credentials in an encrypted file. Credentials are never exposed to the file system in plain text. This CLI uses variable injection and subprocessing to pass credentials into a specified executable. See `aws-auth run`.
+It can cache multiple simultaneous sessions, storing all AWS credentials in an encrypted file. Credentials are never exposed to the file system in plain text. This CLI uses variable injection and subprocessing to pass credentials into a specified executable. See `aws-auth run` for more.
 
-This CLI __requires__ MFA authentication.
+This CLI __requires__ TOTP MFA authentication.
 
 When you authenticate into an AWS account with this CLI and prepend any command with `aws-auth run --` that executable automatically receives AWS credentials through it's environment allowing access to resources in that AWS account. This works for libraries like [aws sdk](https://aws.amazon.com/getting-started/tools-sdks/), [aws cdk](https://aws.amazon.com/cdk/), [aws cli](https://aws.amazon.com/cli/), [aws shell](https://github.com/awslabs/aws-shell), [aws sam](https://aws.amazon.com/serverless/sam/), [rclone](https://rclone.org/) __and any script that utilizes them__.
 
@@ -23,7 +23,7 @@ Here's a usage demo for a quick taste:
 
 <img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/login.gif" alt="login example" />
 
-Notice how easy it is to create and use multiple concurrent AWS sessions.
+Notice how easy it is to create, store and use multiple concurrent AWS sessions. Example use case is to have active sessions for development, staging or production AWS accounts, switching between them as code roll out process progresses forward.
 
 # Installation
 
@@ -36,7 +36,7 @@ npm install -g @iamarkadyt/aws-auth
 
 ### Primary recommended workflow
 
-Create an IAM user for yourself. Remove all permissions and leave a very restricted set allowing to only assume a few other IAM roles. These credentials will be stored on your disk in the encrypted format long term, so having narrow set of associated permissions is important.
+Create an IAM user for yourself. Remove all permissions and leave a very restricted set allowing to only assume a select number of other IAM roles. IAM credentials from this user will be stored on your disk in the encrypted format __long term__, so having narrow set of associated permissions is important.
 
 ```
 {
@@ -46,22 +46,18 @@ Create an IAM user for yourself. Remove all permissions and leave a very restric
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
             "Resource": [
-                "arn:aws:iam::<your-acc-id>:role/DEVELOPER"
+                "arn:aws:iam::<aws-acc-id-where-this-role-lives>:role/DEVELOPER"
             ]
         }
     ]
 }
 ```
 
-Create an access key pair then add it using the below command:
+After that register the TOTP MFA device for your IAM user using an app like Google Authenticator and note the MFA device ARN, it's displayed in your IAM user settings in AWS console. We will need this ARN during the `aws-auth config` stage.
 
-```
-aws-auth config
-```
+Next create an IAM role named `DEVELOPER`. Specify a broader set of permissions here for all the services that you plan on using under this role. You will be assuming this role using your MFA method and by AWS STS design these credentials will not last for more than 12 hours. So even if someone were to obtain the encrypted credential file from your disk and crack it in inder 12 hours they will still end up with an expired set of keys on their hands.
 
-Next create an IAM role named `DEVELOPER`. Specify a broader set of permissions here for all the services that you plan on using. You will be assuming this role using your MFA method and by design these credentials will not last for more than 12 hours. So even if someone were to obtain the encrypted credential file from your disk and crack it in inder 12 hours they will still end up with expired set of keys on their hands.
-
-Make sure to set up the trust policy on this role that looks like below. Note: Removing the MFA condition here will not stop this CLI from asking for MFA code.
+Adjust the temporary credential expiration limits in the IAM Role settings in AWS console. Also make sure to set up the trust policy on this role that looks like below, this is to allow IAM users from your account to assume it. Note: Removing the MFA condition here will not stop this CLI from asking for MFA code.
 
 ```
 {
@@ -70,7 +66,7 @@ Make sure to set up the trust policy on this role that looks like below. Note: R
         {
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::<your-acc-id>:root"
+                "AWS": "arn:aws:iam::<aws-acc-id-where-your-iam-user-lives>:root"
             },
             "Action": "sts:AssumeRole",
             "Condition": {
@@ -83,13 +79,21 @@ Make sure to set up the trust policy on this role that looks like below. Note: R
 }
 ```
 
-Now create a session:
+Now that the `DEVELOPER` role is set up, feel free to create additional roles like `READONLY`, `OPERATOR`, `FULLADMIN`, etc. Adjust your (or others') IAM user permissions accordingly.
+
+Next create an Access Key + Secret Access Key pair on your IAM user and run `aws-auth config`. Select `Create new profile`, provide the profile name, provide the IAM user credentials that you just generated then provide the MFA device ARN that you noted earlier.
+
+After that create an identity linking to your `DEVELOPER` role or any other role that you have created. Select `Add new identity`, pick a profile to link that identity to, provide account label, id, primary region (this is where AWS STS API authentication calls will be sent internally), and provide the IAM Role name. Note that it's not the ARN just the name and that the role name must match exactly.
+
+Once your identities are set up go ahead and login to create a session. Once logged in you can list your active sessions using `list` command.
 
 ```
 aws-auth login
+aws-auth list
 ```
 
-And try invoking other commands:
+
+Now try invoking other commands in your shell that require AWS credentials:
 
 ```
 aws-auth run -- aws s3 ls
@@ -98,9 +102,7 @@ aws-auth run -- rclone sync <...>
 aws-auth run -- sst deploy
 ```
 
-Now you can add more roles for other use cases besides `DEVELOPER`. These roles can be located in other AWS accounts.
-
-To change the encryption passphrase use `aws-auth pwd` command.
+To change the encryption passphrase on the key store use `aws-auth pwd` command.
 
 Full list of variables injected into the subprocess:
 
