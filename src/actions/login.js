@@ -26,7 +26,7 @@ async function login() {
     const profile = cliConfig.profiles[selection]
     const { identities } = profile
 
-    if (!identities.length || !Array.isArray(identities)) {
+    if (!Array.isArray(identities) || !identities.length) {
         console.log(`This profile has no saved identities, use "config" command to add one`.red)
         process.exit(1)
     }
@@ -81,7 +81,7 @@ async function login() {
     let Credentials = null
     try {
         const command = new AssumeRoleCommand(stsParams)
-        ;({ Credentials } = await stsClient.send(command))
+            ; ({ Credentials } = await stsClient.send(command))
     } catch (error) {
         if (error.message.includes('Duration')) {
             console.log(`Specified session duration exceeds the maximum allowed limit set on the '${role}' role`.red)
