@@ -19,9 +19,9 @@ This CLI __requires__ TOTP MFA authentication.
 
 When you authenticate into an AWS account with this CLI and prepend any command with `aws-auth run --` that executable automatically receives AWS credentials through it's environment allowing access to resources in that AWS account. This works for libraries like [aws sdk](https://aws.amazon.com/getting-started/tools-sdks/), [aws cdk](https://aws.amazon.com/cdk/), [aws cli](https://aws.amazon.com/cli/), [aws shell](https://github.com/awslabs/aws-shell), [aws sam](https://aws.amazon.com/serverless/sam/), [rclone](https://rclone.org/) __and any script that utilizes them__.
 
-Here's a usage demo for a quick taste:
+Here's a demo for a quick taste:
 
-<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/login.gif" alt="login example" />
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/config.webm.mp4" alt="login example" />
 
 Notice how easy it is to create, store and use multiple concurrent AWS sessions. Example use case is to have active sessions for development, staging or production AWS accounts, switching between them as code roll out process progresses forward.
 
