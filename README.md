@@ -21,6 +21,7 @@ When you authenticate into an AWS account with this CLI and prepend any command 
 
 Here's a demo for a quick taste:
 
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/intro.gif" alt="login example" />
 
 Notice how easy it is to create, store and use multiple concurrent AWS sessions. Example use case is to have active sessions for development, staging or production AWS accounts, switching between them as code roll out process progresses forward.
 
@@ -83,6 +84,8 @@ Now that the `DEVELOPER` role is set up, feel free to create additional roles li
 Next create an Access Key + Secret Access Key pair on your IAM user and run `aws-auth config`. Select `Create new profile`, provide the profile name, provide the IAM user credentials that you just generated then provide the MFA device ARN that you noted earlier.
 
 After that create an identity linking to your `DEVELOPER` role or any other role that you have created. Select `Add new identity`, pick a profile to link that identity to, provide account label, id, primary region (this is where AWS STS API authentication calls will be sent internally), and provide the IAM Role name. Note that it's not the ARN just the name and that the role name must match exactly.
+
+<img src="https://github.com/iamarkadyt/aws-auth/raw/master/media/config.gif" alt="config example" />
 
 Once your identities are set up go ahead and login to create a session. Once logged in you can list your active sessions using `list` command.
 
